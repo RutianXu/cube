@@ -1,4 +1,8 @@
 {% extends "Layout.html" %}
 {% block content %} 
-{}
+<div>
+    {% for algorithm in alg[:-1] %}
+      <p>{{ algorithm[0] }} - {{ algorithm[-2] }}</p>
+    {% endfor %}
+</div>  
 {% endblock %}

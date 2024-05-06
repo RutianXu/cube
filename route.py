@@ -17,8 +17,9 @@ def about():
 def algorithm(algorithm_set):
     conn = sqlite3.connect('cube.db')
     cur = conn.cursor()
-    cur.execute('SELECT * FROM algorithms WHERE algorithm_set=?', (algorithm_set,))
-    alg = cur.fetchone()
+    cur.execute('SELECT * FROM algorithms WHERE algorithm_set=?',(algorithm_set,))
+    alg = cur.fetchall()
+    conn.close()
     return render_template('algorithms.html', alg=alg)
 
 if __name__ == '__main__':
