@@ -6,12 +6,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def homepage():
-    return '(:'
-
-
-@app.route('/about')
-def about():
-    return':('
+    return render_template('home.html')
 
 
 @app.route('/algorithms/<algorithm_set>')
