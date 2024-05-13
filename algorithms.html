@@ -1,8 +1,20 @@
 {% extends "Layout.html" %}
 {% block content %} 
 <div>
-    {% for algorithm in alg[:-1] %}
-      <p>{{ algorithm[0] }} - {{ algorithm[-2] }}</p>
-    {% endfor %}
+  {% for algorithm in alg %}
+    <div class="algorithm">
+      <img src="data:image/jpeg;base64,{{ algorithm[-1] }}" alt="Algorithm Image">
+      <p>{{ algorithm[1] }} {{ algorithm[-2] }}</p>
+      {% for other_algorithm in algs %}
+        {% if algorithm[1] == other_algorithm[1] %}
+          <div class="algorithms-info">
+            <p>{{ other_algorithm[3] }}</p>
+          </div>
+        {% endif %}
+      {% endfor %}
+    </div>
+  {% endfor %}
 </div>  
 {% endblock %}
+
+
