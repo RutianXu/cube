@@ -1,0 +1,49 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<div id="timer">0.00 s</div>
+<button id="controlButton" onclick="controlTimer()">Start</button>
+
+<script>
+    let timer;
+    let totalMilliseconds = 0;
+    let isRunning = false;
+
+    function controlTimer() {
+        if (!isRunning) {
+            startTimer();
+        } else {
+            stopTimer();
+        }
+    }
+
+    function startTimer() {
+        if (!timer) {
+            timer = setInterval(setTime, 10);
+        }
+        isRunning = true;
+        document.getElementById("controlButton").innerHTML = "Stop";
+    }
+
+    function stopTimer() {
+        clearInterval(timer);
+        timer = null;
+        isRunning = false;
+        document.getElementById("controlButton").innerHTML = "Reset";
+        document.getElementById("controlButton").onclick = resetTimer;
+    }
+
+    function resetTimer() {
+        totalMilliseconds = 0;
+        document.getElementById("timer").innerHTML = "0.00 s";
+        document.getElementById("controlButton").innerHTML = "Start";
+        document.getElementById("controlButton").onclick = controlTimer;
+    }
+
+    function setTime() {
+        totalMilliseconds += 10;
+        const totalSeconds = totalMilliseconds / 1000;
+        document.getElementById("timer").innerHTML = totalSeconds.toFixed(2) + " s";
+    }
+</script>
+{% endblock %}
