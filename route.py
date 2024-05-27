@@ -1,9 +1,9 @@
 from flask import Flask, render_template, request, redirect, session
 import sqlite3
 from base64 import b64encode
-
+from secrets import token_hex
 app = Flask(__name__)
-app.secret_key = 'a'
+app.config['SECRET_KEY'] = token_hex(32)
 
 
 @app.route('/')
