@@ -1,8 +1,15 @@
 {% extends "layout.html" %}
 {% block content %}
 
-<div id="timer">0.00 s</div>
+<p id="timer">0.00 s</p>
 <button id="controlButton" onclick="controlTimer()">Start</button>
+<button onclick="clearTimes()">Clear</button>
+
+<ul id="timeList">
+    {% for time in times %}
+        <li>{{ time[0] }} s</li>
+    {% endfor %}
+</ul>
 
 <script>
     let timer;
@@ -14,6 +21,7 @@
             startTimer();
         } else {
             stopTimer();
+            saveTime(totalMilliseconds / 1000); // Save time when stopping
         }
     }
 
@@ -44,6 +52,35 @@
         totalMilliseconds += 10;
         const totalSeconds = totalMilliseconds / 1000;
         document.getElementById("timer").innerHTML = totalSeconds.toFixed(2) + " s";
+    }
+
+    function saveTime(time) {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "/timer", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                const li = document.createElement("li");
+                li.textContent = time.toFixed(2) + " s";
+                document.getElementById("timeList").appendChild(li);
+            }
+        };
+        xhr.send("time=" + time);
+    }
+
+    function clearTimes() {
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "/timer", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 4 && xhr.status == 200) {
+                const timeList = document.getElementById("timeList");
+                while (timeList.firstChild) {
+                    timeList.removeChild(timeList.firstChild);
+                }
+            }
+        };
+        xhr.send("clear=true");
     }
 </script>
 {% endblock %}
