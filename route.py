@@ -2,8 +2,12 @@ from flask import Flask, render_template, request, redirect, session
 import sqlite3
 from base64 import b64encode
 from secrets import token_hex
+
+
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = token_hex(32)
+
 
 
 @app.route('/')
@@ -11,8 +15,15 @@ def homepage():
     return render_template('home.html')
 
 
-@app.route('/algorithms/<algorithm_set>')
+@app.route('/algorithms/<algorithm_set>', methods=['GET', 'POST'])
 def algorithm(algorithm_set):
+    if request.method == 'POST':
+        algorithm_id = request.form['algorithm_id']
+        user_id = request.form['user_id']
+        rating = request.form['rating']
+        
+        print(f'Algorithm ID: {algorithm_id}, Rating: {rating},user:{user_id}')
+
     conn = sqlite3.connect('cube.db')
     cur = conn.cursor()
     cur.execute('SELECT * FROM algorithms WHERE algorithm_set=?', (algorithm_set,))
