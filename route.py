@@ -19,10 +19,15 @@ def homepage():
 def algorithm(algorithm_set):
     if request.method == 'POST':
         algorithm_id = request.form['algorithm_id']
-        user_id = request.form['user_id']
+        user_id = session.get('user_id')
         rating = request.form['rating']
+
+        conn = sqlite3.connect('cube.db')
+        cur = conn.cursor()
+        cur.execute('INSERT INTO ratings (algorithm_id, user_id, rating) VALUES (?, ?, ?)', (algorithm_id, user_id, rating))
+        conn.commit()
+        conn.close()
         
-        print(f'Algorithm ID: {algorithm_id}, Rating: {rating},user:{user_id}')
 
     conn = sqlite3.connect('cube.db')
     cur = conn.cursor()
@@ -85,11 +90,6 @@ def login():
 @app.route('/logout')
 def logout():
     if 'user_id' in session:
-        conn = sqlite3.connect('cube.db')
-        cur = conn.cursor()
-        cur.execute('DELETE FROM timer WHERE user_id=?', (session['user_id'],))
-        conn.commit()
-        conn.close()
         session.pop('username', None)
         session.pop('user_id', None)
     return redirect('/')
@@ -101,7 +101,7 @@ def timer():
     if 'user_id' not in session:
         return redirect('/login')
 
-    user_id = session['user_id']
+    user_id = session.get('user_id')
 
     if request.method == 'POST':
         if 'time' in request.form:
