@@ -1,0 +1,20 @@
+<div class="nav-bar">
+    <a href="/"> <img src="/static/logo.png" alt="logo" class="logo"> </a>
+    <a href="/">Home</a>
+    <a href="/timer">Timer</a>
+    <!-- algorithm page links-->
+    <div class="dropdown">
+    <button class="dropbtn">Algorithms</button>
+    <div class="dropdown-content">
+    <a href="/algorithms/pll">pll</a>
+    <a href="#">Link 2</a>
+    <a href="#">Link 3</a>
+    </div>
+    <!-- check if user login -->
+    {% if 'username' in session %}
+     <a href="/logout">logout</a>
+    {% else %}
+        <a href="/login">login</a>
+    </div>
+    {% endif %} 
+</div>

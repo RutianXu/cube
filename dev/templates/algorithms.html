@@ -1,0 +1,52 @@
+{% extends "Layout.html" %}
+{% block content %} 
+<div>
+  {% for algorithm in alg %}
+    <div class="algorithm">
+      <!-- display the algorithm image-->
+      <img src="data:image/jpeg;base64,{{ algorithm[-1] }}" alt="Algorithm Image">
+
+      <!-- display the algorithm name and algorithm -->
+      <p>{{ algorithm[1] }} {{ algorithm[-2] }}</p>
+
+      <!-- display other lgorithms that havr the samr name -->
+      {% for other_algorithm in algs %}
+        {% if algorithm[1] == other_algorithm[1] %}
+          <div class="other-algorithms">
+            <p>{{ other_algorithm[3] }}</p>
+
+            <!-- form to submit rating for a algorithm -->
+            <div class="rating">
+              <form action="" method="post">
+                <!-- hidden input to pass the algorithm ID -->
+                <input type="hidden" name="algorithm_id" value="{{ algorithm[0] }}">
+                <!-- rating form -->
+                <div class="form-group">
+                    <label for="rating">Rate this algorithm:</label>
+                    <input type="number" name="rating" min="0" max="5" step="1" required>
+                </div>
+                <button type="submit">Submit Rating</button>
+              </form>
+            </div>
+          </div>
+        {% endif %}
+      {% endfor %}
+
+    </div>
+    <!-- form to submit rating for a algorithm -->
+    <div class="rating">
+      <form action="" method="post">
+        <!-- hidden input to pass the algorithm ID -->
+        <input type="hidden" name="algorithm_id" value="{{ algorithm[0] }}">
+        <!-- rating form -->
+        <div class="form-group">
+            <label for="rating">Rate this algorithm:</label>
+            <input type="number" name="rating" min="0" max="5" step="1" required>
+        </div>
+        <button type="submit">Submit Rating</button>
+      </form>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}
