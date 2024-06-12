@@ -8,7 +8,22 @@
 
       <!-- display the algorithm name and description -->
       <p>{{ algorithm[1] }} {{ algorithm[-2] }}</p>
-
+      
+      <!-- form to submit rating for the main algorithm -->
+      {% if 'username' in session %}
+      <div class="rating">
+        <form method="post">
+          <!-- hidden input to pass the algorithm ID -->
+          <input type="hidden" name="algorithm_id" value="{{ algorithm[0] }}">
+          <!-- rating form -->
+          <div class="form-group">
+              <label for="rating">Rate this algorithm:</label>
+              <input type="number" name="rating" min="0" max="5" step="1" required>
+          </div>
+          <button type="submit">Submit Rating</button>
+        </form>
+      </div>
+    {% endif %}
       <!-- display the average rating if it exists -->
       {% if algorithm[0] in ratings %}
         <p>Average Rating: {{ ratings[algorithm[0]] }}</p>
@@ -20,12 +35,17 @@
           <div class="other-algorithms">
             <p>{{ other_algorithm[3] }}</p>
 
+            <!-- display the average rating if it exists -->
+            {% if other_algorithm[0] in ratings %}
+               <p>Average Rating: {{ ratings[other_algorithm[0]] }}</p>
+            {% endif %}
+
             <!-- form to submit rating for an algorithm -->
             {% if 'username' in session %}
               <div class="rating">
-                <form action="" method="post">
+                <form method="post">
                   <!-- hidden input to pass the algorithm ID -->
-                  <input type="hidden" name="algorithm_id" value="{{ algorithm[0] }}">
+                  <input type="hidden" name="algorithm_id" value="{{ other_algorithm[0] }}">
                   <!-- rating form -->
                   <div class="form-group">
                       <label for="rating">Rate this algorithm:</label>
@@ -38,22 +58,6 @@
           </div>
         {% endif %}
       {% endfor %}
-
-      <!-- form to submit rating for the main algorithm -->
-      {% if 'username' in session %}
-        <div class="rating">
-          <form action="" method="post">
-            <!-- hidden input to pass the algorithm ID -->
-            <input type="hidden" name="algorithm_id" value="{{ algorithm[0] }}">
-            <!-- rating form -->
-            <div class="form-group">
-                <label for="rating">Rate this algorithm:</label>
-                <input type="number" name="rating" min="0" max="5" step="1" required>
-            </div>
-            <button type="submit">Submit Rating</button>
-          </form>
-        </div>
-      {% endif %}
     </div>
   {% endfor %}
 </div>

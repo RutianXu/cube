@@ -25,7 +25,11 @@ def algorithm(algorithm_set):
         # insert the rating into the database
         conn = sqlite3.connect('cube.db')
         cur = conn.cursor()
-        cur.execute('INSERT INTO ratings (algorithm_id, user_id, rating) VALUES (?, ?, ?)', (algorithm_id, user_id, rating))
+        cur.execute('SELECT * FROM RATINGS WHERE algorithm_id = ? AND user_id= ?', (algorithm_id, user_id))
+        if cur.fetchall() == []:
+            cur.execute('INSERT INTO ratings (algorithm_id, user_id, rating) VALUES (?, ?, ?)', (algorithm_id, user_id, rating))
+        else:
+            cur.execute('UPDATE ratings SET rating = ? WHERE user_id = ? AND algorithm_id = ?', (rating, user_id, algorithm_id))
         conn.commit()
         conn.close()
 
