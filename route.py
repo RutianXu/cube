@@ -16,22 +16,28 @@ def homepage():
 # algorithm route
 @app.route('/algorithms/<algorithm_set>', methods=['GET', 'POST'])
 def algorithm(algorithm_set):
-    # form submission for rating
     if request.method == 'POST':  
-        algorithm_id = request.form['algorithm_id']
-        user_id = session.get('user_id')
-        rating = request.form['rating']
+        sorting_way = request.form.get('sorting-select')
+        print(sorting_way)
+    # form submission for rating
+    if 'rating' in request.form:
+        if request.method == 'POST':  
+            algorithm_id = request.form['algorithm_id']
+            user_id = session.get('user_id')
+            rating = request.form['rating']
 
-        # insert the rating into the database
-        conn = sqlite3.connect('cube.db')
-        cur = conn.cursor()
-        cur.execute('SELECT * FROM RATINGS WHERE algorithm_id = ? AND user_id= ?', (algorithm_id, user_id))
-        if cur.fetchall() == []:
-            cur.execute('INSERT INTO ratings (algorithm_id, user_id, rating) VALUES (?, ?, ?)', (algorithm_id, user_id, rating))
-        else:
-            cur.execute('UPDATE ratings SET rating = ? WHERE user_id = ? AND algorithm_id = ?', (rating, user_id, algorithm_id))
-        conn.commit()
-        conn.close()
+            # insert the rating into the database
+            conn = sqlite3.connect('cube.db')
+            cur = conn.cursor()
+            cur.execute('SELECT * FROM RATINGS WHERE algorithm_id = ? AND user_id= ?', (algorithm_id, user_id))#fetch a existing rating from the database
+            if cur.fetchall() == []:# check if a rating exists in database
+                #insert rating if a rating is not exist in the database
+                cur.execute('INSERT INTO ratings (algorithm_id, user_id, rating) VALUES (?, ?, ?)', (algorithm_id, user_id, rating))
+            else:
+                #update rating if a rating exist in the database
+                cur.execute('UPDATE ratings SET rating = ? WHERE user_id = ? AND algorithm_id = ?', (rating, user_id, algorithm_id))
+            conn.commit()
+            conn.close()
 
     # fetch algorithms from the database
     conn = sqlite3.connect('cube.db')
@@ -42,11 +48,11 @@ def algorithm(algorithm_set):
 
     # process algorithms for display in the website
     algorithms = [list(item) for item in algorithms] # store algroithms in a list
-    alg = [] # for storing algorithms in a list with images
-    algs = [] # for storing other algorithms in a list without images
+    alg = [] # list for storing algorithms in a list with images
+    algs = [] # list for storing other algorithms in a list without images
     for algorithm in algorithms:
         image_blob = algorithm[-1]
-        # change image value from blob to binary to a base64 string 
+        # change image value from blob to a base64 string 
         if image_blob:
             encoded_image = b64encode(image_blob).decode('utf-8')
             algorithm[-1] = encoded_image

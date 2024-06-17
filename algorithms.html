@@ -1,6 +1,18 @@
 {% extends "Layout.html" %}
 {% block content %} 
 <div>
+
+  <form method="POST">
+    <div>
+      <select id="sorting-select" name="sorting-select">
+        <option value="default">default</option>
+        <option value="name">name</option>
+        <option value="rating">rating</option>
+      </select>
+      <button type="submit">Submit</button>
+    </div>
+  </form>
+
   {% for algorithm in alg %}
     <div class="algorithm">
       <!-- display the algorithm image -->
