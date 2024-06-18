@@ -1,52 +1,75 @@
 {% extends "Layout.html" %}
 {% block content %} 
 <div>
+
+  <form method="POST">
+    <div>
+      <select id="sorting-select" name="sorting-select">
+        <option value="id">default</option>
+        <option value="name">name</option>
+      </select>
+      <button type="submit">Submit</button>
+    </div>
+  </form>
+
   {% for algorithm in alg %}
     <div class="algorithm">
-      <!-- display the algorithm image-->
+      <!-- display the algorithm image -->
       <img src="data:image/jpeg;base64,{{ algorithm[-1] }}" alt="Algorithm Image">
 
-      <!-- display the algorithm name and algorithm -->
+      <!-- display the algorithm name and description -->
       <p>{{ algorithm[1] }} {{ algorithm[-2] }}</p>
+      
+      <!-- form to submit rating for the main algorithm -->
+      {% if 'username' in session %}
+      <div class="rating">
+        <form method="post">
+          <!-- hidden input to pass the algorithm ID -->
+          <input type="hidden" name="algorithm_id" value="{{ algorithm[0] }}">
+          <!-- rating form -->
+          <div class="form-group">
+              <label for="rating">Rate this algorithm:</label>
+              <input type="number" name="rating" min="0" max="5" step="1" required>
+          </div>
+          <button type="submit">Submit Rating</button>
+        </form>
+      </div>
+    {% endif %}
+      <!-- display the average rating if it exists -->
+      {% if algorithm[0] in ratings %}
+        <p>Average Rating: {{ ratings[algorithm[0]] }}</p>
+      {% endif %}
 
-      <!-- display other lgorithms that havr the samr name -->
+      <!-- display other algorithms that have the same name -->
       {% for other_algorithm in algs %}
         {% if algorithm[1] == other_algorithm[1] %}
           <div class="other-algorithms">
             <p>{{ other_algorithm[3] }}</p>
 
-            <!-- form to submit rating for a algorithm -->
-            <div class="rating">
-              <form action="" method="post">
-                <!-- hidden input to pass the algorithm ID -->
-                <input type="hidden" name="algorithm_id" value="{{ algorithm[0] }}">
-                <!-- rating form -->
-                <div class="form-group">
-                    <label for="rating">Rate this algorithm:</label>
-                    <input type="number" name="rating" min="0" max="5" step="1" required>
-                </div>
-                <button type="submit">Submit Rating</button>
-              </form>
-            </div>
+            <!-- display the average rating if it exists -->
+            {% if other_algorithm[0] in ratings %}
+               <p>Average Rating: {{ ratings[other_algorithm[0]] }}</p>
+            {% endif %}
+
+            <!-- form to submit rating for an algorithm -->
+            {% if 'username' in session %}
+              <div class="rating">
+                <form method="post">
+                  <!-- hidden input to pass the algorithm ID -->
+                  <input type="hidden" name="algorithm_id" value="{{ other_algorithm[0] }}">
+                  <!-- rating form -->
+                  <div class="form-group">
+                      <label for="rating">Rate this algorithm:</label>
+                      <input type="number" name="rating" min="0" max="5" step="1" required>
+                  </div>
+                  <button type="submit">Submit Rating</button>
+                </form>
+              </div>
+            {% endif %}
           </div>
         {% endif %}
       {% endfor %}
-
     </div>
-    <!-- form to submit rating for a algorithm -->
-    <div class="rating">
-      <form action="" method="post">
-        <!-- hidden input to pass the algorithm ID -->
-        <input type="hidden" name="algorithm_id" value="{{ algorithm[0] }}">
-        <!-- rating form -->
-        <div class="form-group">
-            <label for="rating">Rate this algorithm:</label>
-            <input type="number" name="rating" min="0" max="5" step="1" required>
-        </div>
-        <button type="submit">Submit Rating</button>
-      </form>
-    </div>
-  </div>
   {% endfor %}
 </div>
 {% endblock %}

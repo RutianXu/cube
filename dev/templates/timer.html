@@ -1,6 +1,7 @@
 {% extends "layout.html" %}
 
 {% block content %}
+<h2>Timer</h2>
     <!-- timer display -->
     <p id="timer">0.00 s</p>
     
@@ -80,21 +81,21 @@
             xhr.send("time=" + time); // send post request 
         }
 
-        // Function to clear all saved times
+        // function to clear all saved times
         function clearTimes() {
-            const xhr = new XMLHttpRequest(); // Create new XMLHttpRequest object
-            xhr.open("POST", "/timer", true); // Set up POST request to /timer route
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); // Set request header
+            const xhr = new XMLHttpRequest(); // create new XMLHttpRequest object
+            xhr.open("POST", "/timer", true); // set up POST request to /timer route
+            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); // set request header
             xhr.onreadystatechange = function () {
-                if (xhr.readyState == 4 && xhr.status == 200) { // Check if request is complete and successful
-                    // Remove all child nodes (list items) from the time list
+                if (xhr.readyState == 4 && xhr.status == 200) { // check if request is complete and successful
+                    // remove all child nodes (list items) from the time list
                     const timeList = document.getElementById("timeList");
                     while (timeList.firstChild) {
                         timeList.removeChild(timeList.firstChild);
                     }
                 }
             };
-            xhr.send("clear=true"); // Send POST request with clear flag
+            xhr.send("clear=true"); // send POST request with clear flag
         }
     </script>
 {% endblock %}
