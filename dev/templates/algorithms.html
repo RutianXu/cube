@@ -62,7 +62,7 @@
                       <label for="rating">Rate this algorithm:</label>
                       <input type="number" name="rating" min="0" max="5" step="1" required>
                   </div>
-                  <button type="submit">Submit Rating</button>
+                  <button onclick="submitRating()">Submit Rating</button>
                 </form>
               </div>
             {% endif %}
@@ -72,4 +72,9 @@
     </div>
   {% endfor %}
 </div>
+<script>
+  function submitRating() {
+    const xhr = new XMLHttpRequest();
+  }
+</script>
 {% endblock %}
