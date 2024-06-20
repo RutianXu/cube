@@ -1,8 +1,7 @@
 {% extends "Layout.html" %}
-{% block content %} 
+{% block content %}
 <div>
-
-  <form method="POST">
+  <form id="sorting-form">
     <div>
       <select id="sorting-select" name="sorting-select">
         <option value="id">default</option>
@@ -23,18 +22,18 @@
       <!-- form to submit rating for the main algorithm -->
       {% if 'username' in session %}
       <div class="rating">
-        <form method="post">
+        <form id="rating-form" onsubmit="submitRating(event)">
           <!-- hidden input to pass the algorithm ID -->
           <input type="hidden" name="algorithm_id" value="{{ algorithm[0] }}">
           <!-- rating form -->
           <div class="form-group">
-              <label for="rating">Rate this algorithm:</label>
-              <input type="number" name="rating" min="0" max="5" step="1" required>
+            <label for="rating">Rate this algorithm:</label>
+            <input type="number" name="rating" min="0" max="5" step="1" required>
           </div>
           <button type="submit">Submit Rating</button>
         </form>
       </div>
-    {% endif %}
+      {% endif %}
       <!-- display the average rating if it exists -->
       {% if algorithm[0] in ratings %}
         <p>Average Rating: {{ ratings[algorithm[0]] }}</p>
@@ -54,15 +53,15 @@
             <!-- form to submit rating for an algorithm -->
             {% if 'username' in session %}
               <div class="rating">
-                <form method="post">
-                  <!-- hidden input to pass the algorithm ID -->
+                <form id="rating-form" onsubmit="submitRating(event)">
+                  <!-- hidden input to pass the algorithm id -->
                   <input type="hidden" name="algorithm_id" value="{{ other_algorithm[0] }}">
                   <!-- rating form -->
                   <div class="form-group">
                       <label for="rating">Rate this algorithm:</label>
                       <input type="number" name="rating" min="0" max="5" step="1" required>
                   </div>
-                  <button onclick="submitRating()">Submit Rating</button>
+                  <button type="submit">Submit Rating</button>
                 </form>
               </div>
             {% endif %}
@@ -73,8 +72,17 @@
   {% endfor %}
 </div>
 <script>
-  function submitRating() {
-    const xhr = new XMLHttpRequest();
+  function submitRating(event) {
+    event.preventDefault();
+    var xhr= new XMLHttpRequest();
+    xhr.open("POST", "/algorithms/{{algorithm_set}}", true);
+    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+
+    var algorithmId = document.querySelector('input[name="algorithm_id"]').value;
+    var rating = document.querySelector('input[name=rating]').value;
+    var data = 'algorithm_id=' + algorithmId + '&rating=' + rating;
+    xhr.send(data);
   }
+
 </script>
 {% endblock %}

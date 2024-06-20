@@ -23,9 +23,11 @@ def algorithm(algorithm_set):
         # form submission for rating
         if 'rating' in request.form:
             if request.method == 'POST':  
-                algorithm_id = request.form['algorithm_id']
+                algorithm_id = request.form.get('algorithm_id')
                 user_id = session.get('user_id')
-                rating = request.form['rating']
+                rating = request.form.get('rating')
+                print(algorithm_id)
+                print(rating)
 
                 # insert the rating into the database
                 conn = sqlite3.connect('cube.db')
@@ -72,7 +74,7 @@ def algorithm(algorithm_set):
     conn.close()
     ratings = {item[0]: item[1] for item in ratings}
 
-    return render_template('algorithms.html', alg=alg, algs=algs, ratings=ratings)
+    return render_template('algorithms.html', alg=alg, algs=algs, ratings=ratings, algorithm_set=algorithm_set)
 
 
 # registration route
@@ -80,8 +82,8 @@ def algorithm(algorithm_set):
 def register():
     # form submission for register
     if request.method == 'POST':  
-        username = request.form['username']
-        password = request.form['password']
+        username = request.form.get('username')
+        password = request.form.get('password')
 
         # insert the new user into the database
         conn = sqlite3.connect('cube.db')
@@ -99,8 +101,8 @@ def register():
 def login():
     # form submission for login
     if request.method == 'POST':  
-        username = request.form['username']
-        password = request.form['password']
+        username = request.form.get('username')
+        password = request.form.get('password')
 
         # check if the user exists in the database
         conn = sqlite3.connect('cube.db')
