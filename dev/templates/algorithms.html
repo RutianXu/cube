@@ -1,15 +1,17 @@
 {% extends "Layout.html" %}
 {% block content %}
 <div>
-  <form id="sorting-form">
-    <div>
+  <div>
+    <form id = "sorting-form" method="post" onsubmit="sortingOptionDIsplay()">
+      <p>Sort algorithms by</p>
       <select id="sorting-select" name="sorting-select">
-        <option value="id">default</option>
-        <option value="name">name</option>
+          <option id="option-display"></option>
+          <option value="id">default</option>
+          <option value="name">name</option>
       </select>
       <button type="submit">Submit</button>
-    </div>
-  </form>
+    </form>
+  </div>
 
   {% for algorithm in alg %}
     <div class="algorithm">
@@ -98,6 +100,12 @@
     // send data to route.py and remove the form
     xhr.send(data);
     form.remove();
+  }
+
+  function sortingOptionDIsplay(){
+    var sortingSelect = document.getElementById("sorting-select");
+    var sortOption = sortingSelect.value;
+    document.getElementById("option-display").innerHTML = sortOption;
   }
 
   

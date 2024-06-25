@@ -16,7 +16,7 @@ def homepage():
 # algorithm route
 @app.route('/algorithms/<algorithm_set>', methods=['GET', 'POST'])
 def algorithm(algorithm_set):
-    sorting_way = ''
+    sorting_way = 'id'
     if request.method == 'POST':  
         if 'sorting-select' in request.form:
             sorting_way = request.form.get('sorting-select')
