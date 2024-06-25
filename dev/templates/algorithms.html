@@ -22,43 +22,46 @@
       <!-- form to submit rating for the main algorithm -->
       {% if 'username' in session %}
       <div class="rating">
-        <form id="rating-form" onsubmit="submitRating(event)">
-          <!-- hidden input to pass the algorithm ID -->
-          <input type="hidden" name="algorithm_id" value="{{ algorithm[0] }}">
-          <!-- rating form -->
+        <!-- rating form -->
+        <form id="rating-form-{{ algorithm[0] }}" onsubmit="submitRating(event, {{ algorithm[0] }})">
           <div class="form-group">
             <label for="rating">Rate this algorithm:</label>
+            <!-- ratign input form 0 to 5 (integers only)-->
             <input type="number" name="rating" min="0" max="5" step="1" required>
           </div>
           <button type="submit">Submit Rating</button>
         </form>
       </div>
       {% endif %}
+
       <!-- display the average rating if it exists -->
       {% if algorithm[0] in ratings %}
-        <p>Average Rating: {{ ratings[algorithm[0]] }}</p>
+        <p id="rating-display-{{ algorithm[0] }}" >Average Rating: {{ ratings[algorithm[0]] }}</p>
+      {% else %}
+        <p id="rating-display-{{ algorithm[0] }}">No Ratings Yet</p>
       {% endif %}
 
       <!-- display other algorithms that have the same name -->
       {% for other_algorithm in algs %}
         {% if algorithm[1] == other_algorithm[1] %}
-          <div class="other-algorithms">
+          <div id="other-algorithms">
             <p>{{ other_algorithm[3] }}</p>
 
             <!-- display the average rating if it exists -->
             {% if other_algorithm[0] in ratings %}
-               <p>Average Rating: {{ ratings[other_algorithm[0]] }}</p>
+               <p id="rating-display-{{other_algorithm[0]}}">Average Rating: {{ ratings[other_algorithm[0]] }}</p>
+            {% else %}
+               <p id="rating-display-{{ other_algorithm[0] }}">No Ratings Yet</p>
             {% endif %}
 
             <!-- form to submit rating for an algorithm -->
             {% if 'username' in session %}
               <div class="rating">
-                <form id="rating-form" onsubmit="submitRating(event)">
-                  <!-- hidden input to pass the algorithm id -->
-                  <input type="hidden" name="algorithm_id" value="{{ other_algorithm[0] }}">
-                  <!-- rating form -->
+                <form id="rating-form-{{ other_algorithm[0] }}" onsubmit="submitRating(event, {{ other_algorithm[0] }})">
+                  <!-- rating form -->                 
                   <div class="form-group">
                       <label for="rating">Rate this algorithm:</label>
+                      <!-- ratign input form 0 to 5 (integers only)-->
                       <input type="number" name="rating" min="0" max="5" step="1" required>
                   </div>
                   <button type="submit">Submit Rating</button>
@@ -72,17 +75,31 @@
   {% endfor %}
 </div>
 <script>
-  function submitRating(event) {
-    event.preventDefault();
-    var xhr= new XMLHttpRequest();
-    xhr.open("POST", "/algorithms/{{algorithm_set}}", true);
-    xhr.setRequestHeader("Content-type","application/x-www-form-urlencoded");
+  function submitRating(event, algorithmId, averageRating, numberOfRatings) {
+    event.preventDefault();// avoid reloading page
 
-    var algorithmId = document.querySelector('input[name="algorithm_id"]').value;
-    var rating = document.querySelector('input[name=rating]').value;
-    var data = 'algorithm_id=' + algorithmId + '&rating=' + rating;
+    // set up XML httprequest
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", "/algorithms/{{ algorithm_set }}", true);
+    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+    // get data from rating form
+    var form = document.querySelector(`#rating-form-${algorithmId}`); // select rating form by id
+    var rating = form.querySelector('input[name=rating]').value; // get the rating value from rating form
+    var data = 'algorithm_id=' + algorithmId + '&rating=' + rating; // set up a variable for sending data
+
+    // change text to notify user to reload page to see new average rating
+    xhr.onreadystatechange = function(){
+      if (xhr.readyState == 4 && xhr.status == 200){
+        document.getElementById("rating-display-"+ algorithmId).innerHTML = "Rating Submited! Reload to see new average rating.";
+      }
+    }
+    
+    // send data to route.py and remove the form
     xhr.send(data);
+    form.remove();
   }
 
+  
 </script>
 {% endblock %}

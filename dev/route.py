@@ -21,26 +21,23 @@ def algorithm(algorithm_set):
         if 'sorting-select' in request.form:
             sorting_way = request.form.get('sorting-select')
         # form submission for rating
-        if 'rating' in request.form:
-            if request.method == 'POST':  
-                algorithm_id = request.form.get('algorithm_id')
-                user_id = session.get('user_id')
-                rating = request.form.get('rating')
-                print(algorithm_id)
-                print(rating)
+        if 'rating' in request.form:    
+            algorithm_id = request.form.get('algorithm_id')
+            user_id = session.get('user_id')
+            rating = request.form.get('rating')
 
-                # insert the rating into the database
-                conn = sqlite3.connect('cube.db')
-                cur = conn.cursor()
-                cur.execute('SELECT * FROM RATINGS WHERE algorithm_id = ? AND user_id= ?', (algorithm_id, user_id))#fetch a existing rating from the database
-                if cur.fetchall() == []:# check if a rating exists in database
-                    #insert rating if a rating is not exist in the database
-                    cur.execute('INSERT INTO ratings (algorithm_id, user_id, rating) VALUES (?, ?, ?)', (algorithm_id, user_id, rating))
-                else:
-                    #update rating if a rating exist in the database
-                    cur.execute('UPDATE ratings SET rating = ? WHERE user_id = ? AND algorithm_id = ?', (rating, user_id, algorithm_id))
-                conn.commit()
-                conn.close()
+            # insert the rating into the database
+            conn = sqlite3.connect('cube.db')
+            cur = conn.cursor()
+            cur.execute('SELECT * FROM RATINGS WHERE algorithm_id = ? AND user_id= ?', (algorithm_id, user_id))#fetch a existing rating from the database
+            if cur.fetchall() == []:# check if a rating exists in database
+                #insert rating if a rating is not exist in the database
+                cur.execute('INSERT INTO ratings (algorithm_id, user_id, rating) VALUES (?, ?, ?)', (algorithm_id, user_id, rating))
+            else:
+                #update rating if a rating exist in the database
+                cur.execute('UPDATE ratings SET rating = ? WHERE user_id = ? AND algorithm_id = ?', (rating, user_id, algorithm_id))
+            conn.commit()
+            conn.close()
 
     # fetch algorithms from the database
     conn = sqlite3.connect('cube.db')
@@ -69,7 +66,7 @@ def algorithm(algorithm_set):
     #fetch ratings from the database
     conn = sqlite3.connect('cube.db')
     cur = conn.cursor()
-    cur.execute('SELECT algorithm_id, ROUND(AVG(rating), 1) AS average_rating FROM ratings GROUP BY algorithm_id;')
+    cur.execute('SELECT algorithm_id, ROUND(AVG(rating), 1) AS average_rating, COUNT(rating) AS num_ratings FROM ratings GROUP BY algorithm_id;')
     ratings = cur.fetchall()
     conn.close()
     ratings = {item[0]: item[1] for item in ratings}
