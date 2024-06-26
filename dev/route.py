@@ -77,6 +77,8 @@ def algorithm(algorithm_set):
 # registration route
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    username_exist = False
+    registered = False
     # form submission for register
     if request.method == 'POST':  
         username = request.form.get('username')
@@ -85,17 +87,24 @@ def register():
         # insert the new user into the database
         conn = sqlite3.connect('cube.db')
         cur = conn.cursor()
-        cur.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, password))
-        conn.commit()
+        cur.execute('SELECT * FROM users WHERE username= ?', (username))
+        check_username = cur.fetchall()
+        if check_username == []:
+            cur.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, password))
+            conn.commit()
+            registered = True
+        else:
+            username_exist = True
         conn.close()
-        return redirect('/login')  
 
-    return render_template('register.html')
+    return render_template('register.html', username_exist=username_exist, registered=registered)
 
 
 # login route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    logged_in = False
+
     # form submission for login
     if request.method == 'POST':  
         username = request.form.get('username')
@@ -105,16 +114,15 @@ def login():
         conn = sqlite3.connect('cube.db')
         cur = conn.cursor()
         cur.execute('SELECT * FROM users WHERE username=? AND password=?', (username, password))
-        user = cur.fetchone()
+        user = cur.fetchone()        
         conn.close()
 
-        # if user exists, redirect to login and set up session varibles 
-        logged_in = False
+     # if user exists, redirect to login and set up session varibles 
         if user:  
             logged_in = True
             session['username'] = username
             session['user_id'] = user[0]
-            #return redirect('/')
+
     return render_template('login.html', logged_in=logged_in)
 
 

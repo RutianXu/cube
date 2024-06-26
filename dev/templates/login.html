@@ -3,18 +3,18 @@
 {% block content %}
     <h2>Login</h2> 
     {% if logged_in %}
-    <p>You are logged in!</p>
-    <a href="/">Return to home</a>
-    {% else $}
+        <p>You are logged in!</p>
+        <a href="/">Return to home</a>
+    {% else %}
         <!-- form for user login -->
         <form method="post"> 
             <!-- input for username -->
             <label for="username">Username:</label> 
-            <input type="text" name="username"><br> 
+            <input type="text" name="username" required><br> 
             
             <!-- input for password -->
             <label for="password">Password:</label> 
-            <input type="password" name="password"><br> 
+            <input type="password" name="password" required><br> 
             
             <!-- submit login form -->
             <button type="submit">Login</button> 
