@@ -1,17 +1,23 @@
 {% extends "Layout.html" %}
 {% block content %}
 <div>
-  <div>
-    <form id = "sorting-form" method="post" onsubmit="sortingOptionDIsplay()">
-      <p>Sort algorithms by</p>
-      <select id="sorting-select" name="sorting-select">
-          <option id="option-display"></option>
+    <div>
+      <form method="post">
+        {% if sorting_way == 'name' %}
+          <p>Sort algorithms by name</p>
+        {% elif sorting_way == 'id' %}
+          <p>Sort algorithms by default</p>
+        {% else %}
+          <p>Sort algorithms by</p>
+        {% endif %}
+        <select id="sorting-select" name="sorting-select">
+          <option value="">Select an option to sort algorithms</option>
           <option value="id">default</option>
           <option value="name">name</option>
-      </select>
-      <button type="submit">Submit</button>
-    </form>
-  </div>
+        </select>
+        <button type="submit">Submit</button>
+      </form>
+    </div>
 
   {% for algorithm in alg %}
     <div class="algorithm">
@@ -101,13 +107,5 @@
     xhr.send(data);
     form.remove();
   }
-
-  function sortingOptionDIsplay(){
-    var sortingSelect = document.getElementById("sorting-select");
-    var sortOption = sortingSelect.value;
-    document.getElementById("option-display").innerHTML = sortOption;
-  }
-
-  
 </script>
 {% endblock %}

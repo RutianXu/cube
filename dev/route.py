@@ -71,7 +71,7 @@ def algorithm(algorithm_set):
     conn.close()
     ratings = {item[0]: item[1] for item in ratings}
 
-    return render_template('algorithms.html', alg=alg, algs=algs, ratings=ratings, algorithm_set=algorithm_set)
+    return render_template('algorithms.html', alg=alg, algs=algs, ratings=ratings, algorithm_set=algorithm_set, sorting_way=sorting_way)
 
 
 # registration route
@@ -107,12 +107,15 @@ def login():
         cur.execute('SELECT * FROM users WHERE username=? AND password=?', (username, password))
         user = cur.fetchone()
         conn.close()
+
         # if user exists, redirect to login and set up session varibles 
+        logged_in = False
         if user:  
+            logged_in = True
             session['username'] = username
             session['user_id'] = user[0]
-            return redirect('/')
-    return render_template('login.html')
+            #return redirect('/')
+    return render_template('login.html', logged_in=logged_in)
 
 
 #  logout route
