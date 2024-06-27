@@ -2,8 +2,12 @@
 
 {% block content %}
     <h2>Register</h2>
+
+    <!-- check if user registered succesfully-->
     {% if registered %}
         <p>You are registered!</p>
+
+    <!-- form to submit registeration-->
     {% else %}
         <form method="post">
 
@@ -16,8 +20,11 @@
             <button type="submit">Register</button>       
     </form>
     {% endif %}
+
+    <!-- check if username alreday taken -->
     {% if username_exist %}
-        <p>Username already taken!</p>
+        <p>The username is already taken!</p>
     {% endif %}
     <a href="/login">Return to login</a>
+    
 {% endblock %}

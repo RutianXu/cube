@@ -2,18 +2,21 @@
 {% block content %}
 <div>
     <div>
+      <!-- form to submit how to sort algorithms -->
       <form method="post">
+
+        <!--display how algorihms are sorted-->
         {% if sorting_way == 'name' %}
           <p>Sort algorithms by name</p>
-        {% elif sorting_way == 'id' %}
-          <p>Sort algorithms by default</p>
         {% else %}
-          <p>Sort algorithms by</p>
+          <p>Sort algorithms by default</p>
         {% endif %}
+
+        <!-- options for how to sort algorithms -->
         <select id="sorting-select" name="sorting-select">
           <option value="">Select an option to sort algorithms</option>
-          <option value="id">default</option>
-          <option value="name">name</option>
+          <option value="id">Default</option>
+          <option value="name">Name</option>
         </select>
         <button type="submit">Submit</button>
       </form>

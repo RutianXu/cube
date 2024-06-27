@@ -77,23 +77,26 @@ def algorithm(algorithm_set):
 # registration route
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-    username_exist = False
-    registered = False
-    # form submission for register
+    username_exist = False # variable for checking if username exist in the database
+    registered = False # varible for checking if user registered succesfully
+
     if request.method == 'POST':  
+        # get the username and password from the form
         username = request.form.get('username')
         password = request.form.get('password')
 
-        # insert the new user into the database
+        #check if the account exist inthe  database
         conn = sqlite3.connect('cube.db')
         cur = conn.cursor()
-        cur.execute('SELECT * FROM users WHERE username= ?', (username))
+        cur.execute('SELECT * FROM users WHERE username= ?', (username,)) # fetch accounts with the same username
         check_username = cur.fetchall()
         if check_username == []:
-            cur.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, password))
+            # insert the new user into the database
+            cur.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, password,))
             conn.commit()
             registered = True
         else:
+            # tell the user to use a different username 
             username_exist = True
         conn.close()
 
@@ -103,7 +106,8 @@ def register():
 # login route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
-    logged_in = False
+    logged_in = False # varibale for chekcing if is logged in for direct them to homepage
+    wrong_details = False # varibale for chekcing if user's username and password is correct
 
     # form submission for login
     if request.method == 'POST':  
@@ -117,13 +121,16 @@ def login():
         user = cur.fetchone()        
         conn.close()
 
-     # if user exists, redirect to login and set up session varibles 
+        # if user exists, redirect to login and set up session variables 
         if user:  
             logged_in = True
             session['username'] = username
             session['user_id'] = user[0]
+        else:
 
-    return render_template('login.html', logged_in=logged_in)
+            # tell user if the username or password is wrong
+            wrong_details = True
+    return render_template('login.html', logged_in=logged_in, wrong_details=wrong_details)
 
 
 #  logout route

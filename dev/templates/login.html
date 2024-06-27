@@ -2,9 +2,12 @@
 
 {% block content %}
     <h2>Login</h2> 
+
+    <!-- check if user logged in succesfully -->
     {% if logged_in %}
         <p>You are logged in!</p>
         <a href="/">Return to home</a>
+
     {% else %}
         <!-- form for user login -->
         <form method="post"> 
@@ -21,6 +24,11 @@
         </form>
 
         <!-- Link to the registration page -->
-        <a href="/register">Register</a> 
+        <a href="/register">Register an account</a> 
+    {% endif %}
+
+    <!-- error message if username or password is incorrect -->
+    {% if wrong_details %}
+        <p>Incorrect username or password!</p>
     {% endif %}
 {% endblock %} 
