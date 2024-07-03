@@ -121,7 +121,7 @@ def login():
         user = cur.fetchone()        
         conn.close()
 
-        # if user exists, redirect to login and set up session variables 
+        # if user exists, to login and set up session variables 
         if user:  
             logged_in = True
             session['username'] = username
@@ -133,14 +133,31 @@ def login():
     return render_template('login.html', logged_in=logged_in, wrong_details=wrong_details)
 
 
-#  logout route
-@app.route('/logout')
+# logout route
+@app.route('/logout', methods=['GET','POST'])
 def logout():
-    # remove session variables
-    if 'user_id' in session:  
-        session.pop('username', None)
-        session.pop('user_id', None)
-    return redirect('/')
+    logged_out = False # varible checking if user logged out
+    if request.method == 'POST':
+        if 'logout' in request.form or 'delete' in request.form:         
+            if request.form.get('delete') == 'delete':
+                # delete user account, ratings, times in the database
+                user_id = session.get('user_id')
+                conn = sqlite3.connect('cube.db')
+                cur = conn.cursor()
+                cur.execute("DELETE FROM users WHERE id = ?", (user_id,))
+                cur.execute("DELETE FROM ratings WHERE user_id = ?", (user_id,))
+                cur.execute("DELETE FROM timer WHERE user_id = ?", (user_id,))
+                conn.commit()
+                conn.close()
+                session.pop('username')
+                session.pop('user_id')
+                logged_out = True
+            else:
+                # remove session variables
+                session.pop('username')
+                session.pop('user_id')
+                logged_out = True
+    return render_template('logout.html', logged_out=logged_out)
 
 
 # timer route
