@@ -21,6 +21,7 @@
         let timer; // timer interval
         let totalMilliseconds = 0; // total milliseconds elapsed
         let isRunning = false; // flag to track if timer is running
+        let reset = false; // flag to track if time needs to reset
 
         // function to control timer start and stop
         function controlTimer() {
@@ -48,6 +49,7 @@
             isRunning = false; // set running flag to false
             document.getElementById("controlButton").innerHTML = "Reset"; // change button to Reset
             document.getElementById("controlButton").onclick = resetTimer; // change button to resetTimer
+            reset = true; // set reset flag to true
         }
 
         // function to reset the timer
@@ -97,5 +99,19 @@
             };
             xhr.send("clear=true"); // send POST request with clear flag
         }
+
+        // add event listener for keydown event
+        document.addEventListener('keyup', function(event) {
+            if (event.code === 'Space') {
+                if (reset) {
+                    event.preventDefault(); // prevent default spacebar action 
+                    resetTimer(); // call resetTimer function
+                    reset = false; // set reset flag to false
+                } else {
+                    event.preventDefault(); // prevent default spacebar action 
+                    controlTimer(); // call controlTimer function  
+                }
+            }
+        });
     </script>
 {% endblock %}
