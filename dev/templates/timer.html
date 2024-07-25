@@ -1,21 +1,23 @@
 {% extends "layout.html" %}
 
 {% block content %}
-<h2>Timer</h2>
+{% if logged_in %}
+<h1 id="timer-heading">Timer</h1>
     <!-- timer display -->
-    <p id="timer">0.00 s</p>
+    <div id="timer-container">
+        <p id="timer">0.00 s</p>
     
-    <!-- control buttons -->
-    <button id="controlButton" onclick="controlTimer()">Start</button>
-    <button onclick="clearTimes()">Clear</button>
+        <!-- control buttons -->
+        <button class="timer-button" id="controlButton" onclick="controlTimer()">Start</button>
+        <button class="timer-button" onclick="clearTimes()">Clear</button>
 
-    <!-- list to display saved times -->
-    <ul id="timeList">
-        {% for time in times %}
-            <li>{{ time[0] }} s</li>
-        {% endfor %}
-    </ul>
-
+        <!-- list to display saved times -->
+        <ul id="timeList">
+            {% for time in times %}
+                <li>{{ time[0] }} s</li>
+            {% endfor %}
+        </ul>
+    </div>
     
     <script>
         let timer; // timer interval
@@ -114,4 +116,9 @@
             }
         });
     </script>
+
+{% else %}
+    <p>Please login or create an account to use the timer.</p>
+    <a href="/login">Login</a>
+{% endif %}
 {% endblock %}

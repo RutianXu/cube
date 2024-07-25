@@ -1,21 +1,23 @@
-<div class="nav-bar">
+<div class="navbar">
     <a href="/"> <img src="/static/logo.png" alt="logo" class="logo"> </a>
     <a href="/">Home</a>
     <a href="/timer">Timer</a>
 
-    <!-- algorithm page links-->
+    <!-- algorithm page links -->
     <div class="dropdown">
-    <button class="dropbtn">Algorithms</button>
-    <div class="dropdown-content">
-    <a href="/algorithms/pll">pll</a>
-    <a href="/algorithms/oll">oll</a>
+        <button class="dropbtn">Algorithms</button>
+        <div class="dropdown-content">
+            <a href="/algorithms/pll">pll</a>
+            <a href="/algorithms/oll">oll</a>
+        </div>
     </div>
-    
+
     <!-- check if user login -->
-    {% if 'username' in session %}
-     <a href="/logout">logout</a>
-    {% else %}
-        <a href="/login">login</a>
+    <div>
+        {% if 'username' in session %}
+            <a href="/logout">Logout</a>
+        {% else %}
+            <a href="/login">Login</a>
+        {% endif %}
     </div>
-    {% endif %} 
 </div>
