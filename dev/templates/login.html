@@ -1,12 +1,12 @@
 {% extends "layout.html" %} 
 
 {% block content %}
-    <h2>Login</h2> 
-
+    <h2 class="heading">Login</h2> 
+    <div class="container">
     <!-- check if user logged in succesfully -->
     {% if logged_in %}
-        <p>You are logged in!</p>
-        <a href="/">Return to home</a>
+        <p class="heading">You are logged in!</p>
+        <a href="/" class="link">Return to home</a>
 
     {% else %}
         <!-- form for user login -->
@@ -20,15 +20,16 @@
             <input type="password" name="password" required><br> 
             
             <!-- submit login form -->
-            <button type="submit">Login</button> 
+            <button type="submit" class="button">Login</button> 
         </form>
 
         <!-- Link to the registration page -->
-        <a href="/register">Register an account</a> 
+        <a href="/register" class="link">Register an account</a> 
     {% endif %}
 
     <!-- error message if username or password is incorrect -->
     {% if wrong_details %}
-        <p>Incorrect username or password!</p>
+        <p class="error-message">Incorrect username or password!</p>
     {% endif %}
+    </div>
 {% endblock %} 

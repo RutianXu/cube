@@ -1,22 +1,28 @@
 {% extends "Layout.html" %}
 {% block content %} 
 
-<h2>Logout</h2>
+<h2 class="heading">Logout</h2>
+<div class="container">
+    {% if logged_out %}
+        <!-- link to home after logout-->
+        <p class="heading">You are logged out!</p>
+        <a href="/" class="link">Return to home</a>
+    {% elif delete_account %}
+        <!-- link to home after ldelete -->
+        <p class="heading">Account deleted!</p>
+        <a href="/" class="link">Return to home</a>
+    {% else %}
+        <!-- form submission for logout -->
+        <form method="post">
+            <input type="hidden" name="logout" value="logout">
+            <button type="submit" class="button">Logout</button>
+        </form>
 
-{% if logged_out %}
-    <!-- link to home after logout-->
-    <a href="/">Return to home</a>
-{% else %}
-    <!-- form submission for logout -->
-    <form method="post">
-        <input type="hidden" name="logout" value="logout">
-        <button type="submit">Logout</button>
-    </form>
-
-    <!-- form submission for delete account-->
-    <form method="post">
-        <input type="hidden" name="delete" value="delete">
-        <button type="submit">Delete Account</button>
-    </form>
-{% endif %}
+        <!-- form submission for delete account-->
+        <form method="post">
+            <input type="hidden" name="delete" value="delete">
+            <button type="submit" class="button">Delete Account</button>
+        </form>
+    {% endif %}
+</div>
 {% endblock %}

@@ -2,17 +2,18 @@
 
 {% block content %}
 {% if logged_in %}
-<h1 id="timer-heading">Timer</h1>
+<h1 class="heading">Timer</h1>
     <!-- timer display -->
-    <div id="timer-container">
+    <div class="container">
         <p id="timer">0.00 s</p>
     
         <!-- control buttons -->
-        <button class="timer-button" id="controlButton" onclick="controlTimer()">Start</button>
-        <button class="timer-button" onclick="clearTimes()">Clear</button>
+        <button class="button" id="controlButton" onclick="controlTimer()">Start</button>
+        <button class="button" onclick="clearTimes()">Clear</button>
 
         <!-- list to display saved times -->
-        <ul id="timeList">
+         <h2 id="time-list-heading">Times</h2>
+        <ul id="time-list">
             {% for time in times %}
                 <li>{{ time[0] }} s</li>
             {% endfor %}
@@ -76,14 +77,15 @@
             xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); // set request header
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4 && xhr.status == 200) { // check if request is complete and successful
-                    // create new list item for the saved time and append it to the time list
+                    // create new list item for the saved time
                     const li = document.createElement("li");
                     li.textContent = time.toFixed(2) + " s";
-                    document.getElementById("timeList").appendChild(li);
+                    const timeList = document.getElementById("time-list");
+                    timeList.insertBefore(li, timeList.firstChild);
                 }
             };
             xhr.send("time=" + time); // send post request 
-        }
+}
 
         // function to clear all saved times
         function clearTimes() {
@@ -93,7 +95,7 @@
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4 && xhr.status == 200) { // check if request is complete and successful
                     // remove all child nodes (list items) from the time list
-                    const timeList = document.getElementById("timeList");
+                    const timeList = document.getElementById("time-list");
                     while (timeList.firstChild) {
                         timeList.removeChild(timeList.firstChild);
                     }

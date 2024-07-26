@@ -137,6 +137,7 @@ def login():
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     logged_out = False  # flag for checking if user logged out
+    delete_account = False # flag for checking if account deleted
     if request.method == 'POST':
         if 'logout' in request.form or 'delete' in request.form:
             if request.form.get('delete') == 'delete':
@@ -151,13 +152,13 @@ def logout():
                 conn.close()
                 session.pop('username')
                 session.pop('user_id')
-                logged_out = True
+                delete_account = True
             else:
                 # remove session variables
                 session.pop('username')
                 session.pop('user_id')
                 logged_out = True
-    return render_template('logout.html', logged_out=logged_out)
+    return render_template('logout.html', logged_out=logged_out, delete_account=delete_account)
 
 
 # timer route

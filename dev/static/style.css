@@ -2,6 +2,7 @@
 body {
     background-color: #F0F4EF;
 }
+
 .algorithm img {
     margin-right: 10px; 
 }
@@ -17,7 +18,7 @@ body {
     font-family: Arial;
 }
 
-/* logo-specific styling */
+/* logo */
 .logo {
     background-color: white;
     border-radius: 3px;
@@ -93,22 +94,22 @@ body {
     background-color: red;
 }
 
-/* timer page heading */ 
-#timer-heading {
+/* headings */ 
+.heading {
     text-align: center; 
     font-size: 3em; 
     margin: 20px 0; 
 }
 
-/* timer display */
+/* timer */
 #timer {
     text-align: center;
     font-size: 5em; 
     margin: 20px 0;
 }
 
-/* container for timer */
-#timer-container {
+/* containers */
+.container {
     text-align: center; 
     background-color: white; 
     padding: 20px; 
@@ -118,8 +119,75 @@ body {
     margin: 0 auto; 
 }
 
-/* timer buttons display */
-.timer-button {
-    font-size: 2em;
+/* buttons */
+.button {
+    font-size: 2em; 
+    padding: 15px 30px; 
+    margin: 10px; 
+    border: none; 
+    border-radius: 8px; 
     cursor: pointer; 
+}
+
+/* add a grey background to the buttons when hover */
+.button:hover {
+    background-color: #7e7f7f; 
+}
+
+/* time list display */
+#time-list {
+    list-style-type: none; 
+    padding: 0; 
+    margin: 0; 
+}
+
+/* time list item */
+#time-list li {
+    font-size: 1.2em; 
+    margin: 10px 0; 
+}
+
+/* form */
+form {
+    width: 100%; 
+}
+
+/* form labels */
+form label {
+    margin: 10px 0 5px; 
+    font-weight: bold; 
+    width: 100%; 
+    text-align: left; 
+}
+
+/* form inputs */
+form input {
+    padding: 10px;
+    margin: 5px 0; 
+    border: 1px solid #ccc; 
+    border-radius: 4px; 
+    width: 100%; 
+    max-width: 300px; 
+}
+
+/* error messages */
+.error-message {
+    color: red; /* Red text color */
+    font-weight: bold; /* Bold text for emphasis */
+    margin: 10px 0; /* Margin for spacing */
+    font-size: 2em;
+}
+
+/* links */
+.link {
+    font-size: 2em; 
+    text-decoration: none; 
+    margin: 10px 0; 
+    padding: 10px; 
+    display: inline-block; 
+}
+
+
+.link:hover {
+    text-decoration: underline;  
 }
