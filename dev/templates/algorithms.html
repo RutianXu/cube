@@ -2,113 +2,88 @@
 {% block content %}
 <div>
     <div>
-      <!-- form to submit how to sort algorithms -->
-      <form method="post">
-
-        <!--display how algorihms are sorted-->
-        {% if sorting_way == 'name' %}
-          <p>Sort algorithms by name</p>
-        {% else %}
-          <p>Sort algorithms by default</p>
-        {% endif %}
-
-        <!-- options for how to sort algorithms -->
-        <select id="sorting-select" name="sorting-select">
-          <option value="">Select an option to sort algorithms</option>
-          <option value="id">Default</option>
-          <option value="name">Name</option>
-        </select>
-        <button type="submit">Submit</button>
-      </form>
-    </div>
-
-  {% for algorithm in alg %}
-    <div class="algorithm">
-      <!-- display the algorithm image -->
-      <img src="data:image/jpeg;base64,{{ algorithm[-1] }}" alt="Algorithm Image">
-
-      <!-- display the algorithm name and description -->
-      <p>{{ algorithm[1] }} {{ algorithm[-2] }}</p>
-      
-      <!-- form to submit rating for the main algorithm -->
-      {% if 'username' in session %}
-      <div class="rating">
-        <!-- rating form -->
-        <form id="rating-form-{{ algorithm[0] }}" onsubmit="submitRating(event, {{ algorithm[0] }})">
-          <div class="form-group">
-            <label for="rating">Rate this algorithm:</label>
-            <!-- ratign input form 0 to 5 (integers only)-->
-            <input type="number" name="rating" min="0" max="5" step="1" required>
-          </div>
-          <button type="submit">Submit Rating</button>
-        </form>
-      </div>
-      {% endif %}
-
-      <!-- display the average rating if it exists -->
-      {% if algorithm[0] in ratings %}
-        <p id="rating-display-{{ algorithm[0] }}" >Average Rating: {{ ratings[algorithm[0]] }}</p>
-      {% else %}
-        <p id="rating-display-{{ algorithm[0] }}">No Ratings Yet</p>
-      {% endif %}
-
-      <!-- display other algorithms that have the same name -->
-      {% for other_algorithm in algs %}
-        {% if algorithm[1] == other_algorithm[1] %}
-          <div id="other-algorithms">
-            <p>{{ other_algorithm[3] }}</p>
-
-            <!-- display the average rating if it exists -->
-            {% if other_algorithm[0] in ratings %}
-               <p id="rating-display-{{other_algorithm[0]}}">Average Rating: {{ ratings[other_algorithm[0]] }}</p>
+        <!-- Form to submit sorting options -->
+        <form method="post">
+            <!-- Display sorting method -->
+            {% if sorting_way == 'name' %}
+                <p>Sort algorithms by name</p>
             {% else %}
-               <p id="rating-display-{{ other_algorithm[0] }}">No Ratings Yet</p>
+                <p>Sort algorithms by default</p>
             {% endif %}
 
-            <!-- form to submit rating for an algorithm -->
-            {% if 'username' in session %}
-              <div class="rating">
-                <form id="rating-form-{{ other_algorithm[0] }}" onsubmit="submitRating(event, {{ other_algorithm[0] }})">
-                  <!-- rating form -->                 
-                  <div class="form-group">
-                      <label for="rating">Rate this algorithm:</label>
-                      <!-- ratign input form 0 to 5 (integers only)-->
-                      <input type="number" name="rating" min="0" max="5" step="1" required>
-                  </div>
-                  <button type="submit">Submit Rating</button>
-                </form>
-              </div>
-            {% endif %}
-          </div>
-        {% endif %}
-      {% endfor %}
+            <!-- Sorting options -->
+            <select id="sorting-select" name="sorting-select">
+                <option value="">Select an option to sort algorithms</option>
+                <option value="id">Default</option>
+                <option value="name">Name</option>
+            </select>
+            <button type="submit">Submit</button>
+        </form>
     </div>
-  {% endfor %}
+
+    {% for image in images %}
+        <div class="algorithm">
+            <!-- Display the algorithm image -->
+            <img src="data:image/jpeg;base64,{{ image[1] }}" alt="Algorithm Image">
+
+            <!-- Display the algorithm name -->
+            <p>{{ image[0] }}</p>
+
+
+            <!-- Filter and display the algorithms -->
+            {% for algs in algorithms %}
+                {% if algs[1] == image[0] %}
+                    <p> {{ algs[3] }}</p>
+
+                    <!-- Rating form -->
+                    {% if 'username' in session %}
+                    <div class="rating">
+                        <form id="rating-form-{{ algs[0] }}" onsubmit="submitRating(event, '{{ algs[0] }}')">
+                            <div class="form-group">
+                                <label for="rating">Rate this algorithm:</label>
+                                <input type="number" name="rating" min="0" max="5" step="1" required>
+                            </div>
+                            <button type="submit">Submit Rating</button>
+                        </form>
+                    </div>
+                    {% endif %}
+
+                    <!-- Average rating display -->
+                    {% if algs[0] in ratings %}
+                        <p id="rating-display-{{ algs[0] }}">Average Rating: {{ ratings[algs[0]] }}</p>
+                    {% else %}
+                        <p id="rating-display-{{ algs[0] }}">No Ratings Yet</p>
+                    {% endif %}
+                            {% endif %}
+            {% endfor %}
+        </div>
+    {% endfor %}
 </div>
+
 <script>
-  function submitRating(event, algorithmId, averageRating, numberOfRatings) {
-    event.preventDefault();// avoid reloading page
+    function submitRating(event, algorithmId) {
+        event.preventDefault();
 
-    // set up XML httprequest
-    var xhr = new XMLHttpRequest();
-    xhr.open("POST", "/algorithms/{{ algorithm_set }}", true);
-    xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        // Set up XMLHttpRequest
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "/algorithms/{{ algorithm_set }}", true);
+        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
-    // get data from rating form
-    var form = document.querySelector(`#rating-form-${algorithmId}`); // select rating form by id
-    var rating = form.querySelector('input[name=rating]').value; // get the rating value from rating form
-    var data = 'algorithm_id=' + algorithmId + '&rating=' + rating; // set up a variable for sending data
+        // Get data from rating form
+        var form = document.querySelector(`#rating-form-${algorithmId}`);
+        var rating = form.querySelector('input[name=rating]').value;
+        var data = 'algorithm_id=' + algorithmId + '&rating=' + rating;
 
-    // change text to notify user to reload page to see new average rating
-    xhr.onreadystatechange = function(){
-      if (xhr.readyState == 4 && xhr.status == 200){
-        document.getElementById("rating-display-"+ algorithmId).innerHTML = "Rating Submited! Reload to see new average rating.";
-      }
+        // Notify user to reload page to see new average rating
+        xhr.onreadystatechange = function(){
+            if (xhr.readyState == 4 && xhr.status == 200){
+                document.getElementById("rating-display-" + algorithmId).innerHTML = "Rating Submitted! Reload to see new average rating.";
+            }
+        };
+        
+        // Send data to route.py and remove the form
+        xhr.send(data);
+        form.remove();
     }
-    
-    // send data to route.py and remove the form
-    xhr.send(data);
-    form.remove();
-  }
 </script>
 {% endblock %}

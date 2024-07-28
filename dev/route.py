@@ -50,19 +50,17 @@ def algorithm(algorithm_set):
         cur.execute('SELECT * FROM algorithms WHERE algorithm_set=? ORDER BY id', (algorithm_set,))
     algorithms = cur.fetchall()
     conn.close()
+
     # process algorithms for display in the website
-    algorithms = [list(item) for item in algorithms]  # store algorithms in a list
-    alg = []  # list for storing algorithms in a list with images
-    algs = []  # list for storing other algorithms in a list without images
+    algorithms = [list(item) for item in algorithms]  # store all algorithms in a list
+    images = []
     for algorithm in algorithms:
         image_blob = algorithm[-1]
         # change image value from blob to a base64 string
         if image_blob:
             encoded_image = b64encode(image_blob).decode('utf-8')
-            algorithm[-1] = encoded_image
-            alg.append(algorithm)
-        else:
-            algs.append(algorithm)
+            img = [algorithm[1], encoded_image]
+            images.append(img)
 
     # fetch ratings from the database
     conn = sqlite3.connect('cube.db')
@@ -72,7 +70,7 @@ def algorithm(algorithm_set):
     conn.close()
     ratings = {item[0]: item[1] for item in ratings}
 
-    return render_template('algorithms.html', alg=alg, algs=algs, ratings=ratings, algorithm_set=algorithm_set, sorting_way=sorting_way)
+    return render_template('algorithms.html', algorithms=algorithms, images=images, ratings=ratings, algorithm_set=algorithm_set, sorting_way=sorting_way)
 
 
 # registration route
