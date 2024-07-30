@@ -2,14 +2,36 @@
 {% block content %}
 <div>
     <h1 class="heading">{{ algorithm_set | upper }}</h1>
+    <div>
+        {% if algorithm_set == 'pll'%}
+            <p class="container" class="description">
+                PLL (Permutation of the Last Layer) algorithms are used in the final stage of solving 
+                a Rubik's Cube to correctly position the pieces of the last layer after their orientation
+                has been set. These algorithms ensure that each piece is moved into its correct spot
+                without affecting the already solved portions of the cube, thereby completing the
+                puzzle. Mastering PLL algorithms is essential for efficiently finishing the cube
+                and achieving a fully solved state.
+            </p>
+        {% elif algorithm_set == 'oll' %}
+            <p class="container" class="description">
+                OLL (Orientation of the Last Layer) algorithms are used in the intermediate
+                stage of solving a Rubik's Cube to orient all pieces on the last layer so
+                that the top face of the cube is uniform in color. This step is crucial
+                as it sets up the final phase, where the pieces are permuted into their
+                correct positions. By mastering OLL algorithms, solvers can ensure that
+                the last layer is correctly oriented, making the final stage of the solve
+                 more straightforward and efficient.
+            </p>
+        {% endif %}
+    </div>
     <div class="container">
         <!-- Form to submit sorting options -->
         <form method="post" id="sorting-form">
             <!-- Display sorting method -->
             {% if sorting_way == 'name' %}
-                <p>Sort algorithms by name</p>
+                <p>Sort algorithms by NAME</p>
             {% else %}
-                <p>Sort algorithms by default</p>
+                <p>Sort algorithms by DEFAULT</p>
             {% endif %}
 
             <!-- Sorting options -->

@@ -1,3 +1,28 @@
 {% extends "Layout.html" %}
 {% block content %} 
+<h1 class="heading">HOME</h1>
+<p class="container" class="description">
+  Welcome to the Rubik’s Cube Algorithms website!
+  This platform is designed to help enthusiasts improve their cube-solving skills,
+  particularly at the intermediate level. It offers a comprehensive collection of
+  algorithms for solving various cube states. Users can rate the algorithms
+  provided, creating a valuable resource for mastering the Rubik’s Cube
+</p>
+
+<div class="image-container">
+  <div class="image-item">
+      <h2 class="heading">OLL</h2>
+      <a href="/algorithms/oll">
+          <img src="/static/oll.png" alt="OLL algorithms">
+      </a>
+  </div>
+  <div class="image-item">
+      <h2 class="heading">PLL</h2>
+      <a href="/algorithms/pll">
+          <img src="/static/pll.png" alt="PLL algorithms">
+      </a>
+  </div>
+</div>
+
+
 {% endblock %}
