@@ -1,14 +1,16 @@
+/* algorithm display */
+#algorithm {
+    font-size: 30px; 
+}
+
+/* algorithm name display */
+#alg-name {
+    font-size: 40px; 
+}
+
 /* add a background color to the body */
 body {
     background-color: #F0F4EF;
-}
-
-.algorithm img {
-    margin-right: 10px; 
-}
-
-.algorithm {
-    margin-left: 20px; 
 }
 
 /* navbar container */
@@ -113,10 +115,9 @@ body {
     text-align: center; 
     background-color: white; 
     padding: 20px; 
-    border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
     max-width: 600px; 
-    margin: 0 auto; 
+    margin: 20px auto; 
 }
 
 /* buttons */
@@ -187,7 +188,28 @@ form input {
     display: inline-block; 
 }
 
-
+/* links when hover */
 .link:hover {
     text-decoration: underline;  
+}
+
+/* text inside the sorting form */
+#sorting-form p {
+    font-size: 1.2em; 
+    margin: 0 0 10px; 
+    text-align: center; 
+}
+
+/* select elements in sorting form */
+#sorting-select {
+    padding: 10px;
+    border: 1px solid #ccc; 
+    font-size: 1em; 
+    width: 100%; 
+    margin-bottom: 20px; 
+}
+
+/* rating display */
+.rating-text {
+    font-size: 2em;
 }

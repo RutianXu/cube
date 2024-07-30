@@ -16,10 +16,13 @@ def homepage():
 # algorithm route
 @app.route('/algorithms/<algorithm_set>', methods=['GET', 'POST'])
 def algorithm(algorithm_set):
-    sorting_way = 'id'
+    sorting_way = 'id' # default sorting method for algoirthms 
+
     if request.method == 'POST':
+        # form submission for how algoirthms are sorted
         if 'sorting-select' in request.form:
             sorting_way = request.form.get('sorting-select')
+
         # form submission for rating
         if 'rating' in request.form:
             algorithm_id = request.form.get('algorithm_id')
@@ -30,7 +33,8 @@ def algorithm(algorithm_set):
             conn = sqlite3.connect('cube.db')
             cur = conn.cursor()
             cur.execute('SELECT * FROM ratings WHERE algorithm_id = ? AND user_id = ?', (algorithm_id, user_id))  # fetch an existing rating from the database
-            if not cur.fetchall():  # check if a rating exists in the database
+            check_rating = cur.fetchall()
+            if check_rating == []:  # check if a rating exists in the database
                 # insert rating if a rating is not exist in the database
                 cur.execute('INSERT INTO ratings (algorithm_id, user_id, rating) VALUES (?, ?, ?)', (algorithm_id, user_id, rating))
             else:

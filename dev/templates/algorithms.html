@@ -1,9 +1,10 @@
 {% extends "Layout.html" %}
 {% block content %}
 <div>
-    <div>
+    <h1 class="heading">{{ algorithm_set | upper }}</h1>
+    <div class="container">
         <!-- Form to submit sorting options -->
-        <form method="post">
+        <form method="post" id="sorting-form">
             <!-- Display sorting method -->
             {% if sorting_way == 'name' %}
                 <p>Sort algorithms by name</p>
@@ -22,39 +23,40 @@
     </div>
 
     {% for image in images %}
-        <div class="algorithm">
+        <div class="container">
+            <!-- Display the algorithm name -->
+            <p id="alg-name">Name: {{ image[0] }}</p>
+
             <!-- Display the algorithm image -->
             <img src="data:image/jpeg;base64,{{ image[1] }}" alt="Algorithm Image">
-
-            <!-- Display the algorithm name -->
-            <p>{{ image[0] }}</p>
-
 
             <!-- Filter and display the algorithms -->
             {% for algs in algorithms %}
                 {% if algs[1] == image[0] %}
-                    <p> {{ algs[3] }}</p>
+          
+                  <p id="algorithm"> {{ algs[3] }}</p>
 
-                    <!-- Rating form -->
-                    {% if 'username' in session %}
-                    <div class="rating">
-                        <form id="rating-form-{{ algs[0] }}" onsubmit="submitRating(event, '{{ algs[0] }}')">
-                            <div class="form-group">
-                                <label for="rating">Rate this algorithm:</label>
-                                <input type="number" name="rating" min="0" max="5" step="1" required>
-                            </div>
-                            <button type="submit">Submit Rating</button>
-                        </form>
-                    </div>
-                    {% endif %}
+                  <!-- Rating form -->
+                  {% if 'username' in session %}
+                  <div class="rating">
+                      <form id="rating-form-{{ algs[0] }}" onsubmit="submitRating(event, '{{ algs[0] }}')">
+                          <div class="form-group">
+                              <label for="rating">Rate this algorithm:</label>
+                              <input type="number" name="rating" min="0" max="5" step="1" required>
+                          </div>
+                          <button type="submit">Submit Rating</button>
+                      </form>
+                  </div>
+                  {% endif %}
 
-                    <!-- Average rating display -->
-                    {% if algs[0] in ratings %}
-                        <p id="rating-display-{{ algs[0] }}">Average Rating: {{ ratings[algs[0]] }}</p>
-                    {% else %}
-                        <p id="rating-display-{{ algs[0] }}">No Ratings Yet</p>
-                    {% endif %}
-                            {% endif %}
+                  <!-- Average rating display -->
+                  {% if algs[0] in ratings %}
+                      <p class="rating-text" id="rating-display-{{ algs[0] }}">Average Rating: {{ ratings[algs[0]] }}</p>
+                  {% else %}
+                      <p class="rating-text" id="rating-display-{{ algs[0] }}">No Ratings Yet</p>
+                  {% endif %}
+                          {% endif %}
+        
             {% endfor %}
         </div>
     {% endfor %}
