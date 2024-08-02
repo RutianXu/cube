@@ -1,32 +1,54 @@
+/* Apply box-sizing globally */
+*,
+*::before,
+*::after {
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+}
+
 /* General Styles */
 
 /* Set the background colour and font for the entire page */
 body {
-    background-color: #F0F4EF; /* Light greyish background */
+    background-color: #F0F4EF; 
     font-family: Arial, sans-serif; /* Font style for the entire page */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Full viewport height */
+    margin: 0;
 }
 
 /* Container for centralised content with padding and box shadow */
 .container {
-    text-align: centre; /* Centre-align text within the container */
-    background-color: white; /* White background for the container */
-    padding: 20px; /* Padding inside the container */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    max-width: 600px; /* Maximum width of the container */
+    display: grid; /* Enable grid layout */
+    gap: 20px; /* Space between grid items */
+    text-align: center; 
+    background-color: white; 
+    padding: 20px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    max-width: 600px; 
     margin: 20px auto; /* Centre the container with automatic margins */
+    flex: 1; /* Allow the container to grow and fill available space */
+}
+
+/* Images inside the container */
+.container img {
+    display: block; /* Ensure the image is a block element */
+    max-width: 100%; 
+    height: auto; 
+    margin: 0 auto; /* Center the image horizontally */
 }
 
 /* Heading styling for large, centralised titles */
 .heading {
-    text-align: centre; /* Centre-align headings */
-    font-size: 3em; /* Font size for headings */
+    text-align: center; 
+    font-size: 3em; 
     margin: 20px 0; /* Margin above and below the heading */
 }
 
 /* Timer display styling with large font size */
 #timer {
-    text-align: centre; /* Centre-align timer */
-    font-size: 5em; /* Larger font size for visibility */
+    text-align: center; 
+    font-size: 5em; 
     margin: 20px 0; /* Margin above and below the timer */
 }
 
@@ -34,25 +56,24 @@ body {
 
 /* Styling for the footer with background colour, text colour, and padding */
 footer {
-    background-color: #0B1821; /* Dark blue background for footer */
-    color: white; /* White text colour */
-    text-align: centre; /* Centre-align text in the footer */
+    background-color: #0B1821; 
+    color: white; 
+    text-align: center; 
     padding: 20px; /* Padding inside the footer */
-    font-size: 14px; /* Font size for footer text */
-    position: relative; /* Relative positioning for footer */
-    bottom: 0; /* Stick to the bottom of the page */
-    width: 100%; /* Full width of the page */
+    font-size: 14px; 
+    width: 100%; 
+    margin-top: auto; /* Push the footer to the bottom */
 }
 
 /* Styling for footer links with colour and hover effects */
 footer a {
-    color: #B4CDE4; /* Light blue for links */
-    text-decoration: none; /* Remove underline from links */
+    color: #B4CDE4; 
+    text-decoration: none; 
     margin: 0 10px; /* Horizontal margin between links */
 }
 
 footer a:hover {
-    text-decoration: underline; /* Underline links on hover */
+    text-decoration: underline; 
 }
 
 /* Navbar Styles */
@@ -60,17 +81,17 @@ footer a:hover {
 /* Navbar container with background colour and font settings */
 .navbar {
     overflow: hidden; /* Prevent overflow of navbar content */
-    background-color: #344966; /* Dark blue background for navbar */
-    font-family: Arial; /* Font style for navbar */
+    background-color: #344966; 
+    font-family: Arial; 
 }
 
 /* Logo styling with background colour, dimensions, and alignment */
 .logo {
-    background-color: white; /* White background for logo */
-    border-radius: 3px; /* Rounded corners for the logo */
-    height: 40px; /* Height of the logo */
-    width: auto; /* Auto width to maintain aspect ratio */
-    vertical-align: middle; /* Align logo vertically */
+    background-color: white; 
+    border-radius: 3px; 
+    height: 40px; 
+    width: auto; 
+    vertical-align: middle; 
     display: inline-block; /* Inline-block display for proper alignment */
     margin-right: 20px; /* Margin to the right of the logo */
 }
@@ -78,12 +99,18 @@ footer a:hover {
 /* Navbar links with font size, colour, padding, and alignment */
 .navbar a {
     float: left; /* Float links to the left */
-    font-size: 40px; /* Font size for navbar links */
-    color: white; /* White text colour for links */
-    text-align: centre; /* Centre-align text within links */
-    padding: 14px 20px; /* Padding inside links */
-    text-decoration: none; /* Remove underline from links */
+    font-size: 40px; 
+    color: white; 
+    text-align: center; 
+    padding: 14px 20px;
+    border-radius: 10px; 
+    text-decoration: none; 
     line-height: 40px; /* Line height to match font size */
+}
+
+/* Active link styling */
+.navbar a.active, .navbar .dropbtn.active {
+    background-color: #ff4d4d;  
 }
 
 /* Dropdown container for additional navigation options */
@@ -94,10 +121,10 @@ footer a:hover {
 
 /* Dropdown button styling with font size, colour, and padding */
 .dropdown .dropbtn {
-    font-size: 40px; /* Font size for dropdown button */
+    font-size: 40px; 
     border: none; /* Remove border from dropdown button */
     outline: none; /* Remove outline from dropdown button */
-    color: white; /* White text colour */
+    color: white; 
     padding: 14px 20px; /* Padding inside the dropdown button */
     background-color: inherit; /* Inherit background colour from navbar */
     margin: 0; /* Remove margin */
@@ -109,25 +136,25 @@ footer a:hover {
 .dropdown-content {
     display: none; /* Hide dropdown content initially */
     position: absolute; /* Absolute positioning for dropdown content */
-    background-color: #f9f9f9; /* Light grey background for dropdown */
-    min-width: 160px; /* Minimum width of dropdown */
+    background-color: #f9f9f9; 
+    min-width: 160px; 
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2); /* Shadow effect for dropdown */
-    z-index: 1; /* Ensure dropdown content is on top */
+    z-index: 1; 
 }
 
 /* Links inside the dropdown with colour, padding, and alignment */
 .dropdown-content a {
     float: none; /* No floating for dropdown links */
-    color: black; /* Black text colour for dropdown links */
+    color: black; 
     padding: 12px 16px; /* Padding inside dropdown links */
-    text-decoration: none; /* Remove underline from dropdown links */
+    text-decoration: none;
     display: block; /* Block display for dropdown links */
-    text-align: left; /* Left-align text within dropdown links */
+    text-align: left; 
 }
 
 /* Hover effect for dropdown links */
 .dropdown-content a:hover {
-    background-color: #ddd; /* Light grey background on hover */
+    background-color: #ddd; 
 }
 
 /* Show the dropdown menu when hovering over the dropdown container */
@@ -137,7 +164,7 @@ footer a:hover {
 
 /* Navbar and dropdown button hover effects */
 .navbar a:hover, .dropdown:hover .dropbtn {
-    background-color: red; /* Red background on hover */
+    background-color: red; 
 }
 
 /* Image Container Styles */
@@ -145,8 +172,8 @@ footer a:hover {
 /* Container for images with flex layout, spacing, and padding */
 .image-container {
     display: flex; /* Flexbox layout for images */
-    justify-content: centre; /* Centre-align images horizontally */
-    gap: 20px; /* Space between images */
+    justify-content: center; /* Centre-align images horizontally */
+    gap: 20px; 
     padding: 20px; /* Padding inside the image container */
 }
 
@@ -154,17 +181,20 @@ footer a:hover {
 .image-item {
     display: flex; /* Flexbox layout for image items */
     flex-direction: column; /* Stack items vertically */
-    align-items: centre; /* Centre-align items horizontally */
+    align-items: center; /* Centre-align items horizontally */
+    text-align: center; 
 }
 
 /* Styling for images within the container */
 .image-container img {
-    background-color: #B4CDE4; /* Light blue background for images */
-    width: 200px; /* Fixed width for images */
-    height: auto; /* Maintain aspect ratio */
+    background-color: #B4CDE4; 
+    width: 200px; 
+    height: auto; 
     border: 2px solid #ccc; /* Light grey border */
-    border-radius: 8px; /* Rounded corners for images */
+    border-radius: 8px; 
     transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition effects */
+    display: block; /* Ensure the image is a block element */
+    margin: 0 auto; /* Center the image horizontally */
 }
 
 /* Hover effects for images to scale and add shadow */
@@ -177,13 +207,25 @@ footer a:hover {
 
 /* Styling for the algorithm display */
 #algorithm {
-    font-size: 30px; /* Font size for algorithm display */
-    background-color: #B4CDE4; /* Light blue background */
+    font-size: 40px; 
+    background-color: #B4CDE4; 
+    border-radius: 10px;
 }
 
 /* Styling for the algorithm name with larger font size */
 #alg-name {
-    font-size: 40px; /* Font size for algorithm name */
+    font-size: 40px; 
+}
+
+/* Style for algorithm's container */
+#alg-container {
+    background-color: #E1F5FE; 
+    padding: 20px; /* Add padding around the content */
+    border-radius: 10px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    max-width: 800px; 
+    margin: 20px auto; /* Center the container with automatic margins */
+    color: #000000; 
 }
 
 /* Form Styles */
@@ -198,7 +240,7 @@ form label {
     margin: 10px 0 5px; /* Margin above and below labels */
     font-weight: bold; /* Bold font weight for labels */
     width: 100%; /* Full width of the label */
-    text-align: left; /* Left-align text within labels */
+    text-align: left; 
 }
 
 /* Form input styling with padding, border, and width constraints */
@@ -207,21 +249,21 @@ form input {
     margin: 5px 0; /* Margin above and below inputs */
     border: 1px solid #ccc; /* Light grey border */
     border-radius: 4px; /* Rounded corners for inputs */
-    width: 100%; /* Full width of the input */
-    max-width: 300px; /* Maximum width of the input */
+    width: 100%;
+    max-width: 300px; 
 }
 
 /* Error message styling with red colour and bold text */
 .error-message {
-    color: red; /* Red text colour */
+    color: red; 
     font-weight: bold; /* Bold text for emphasis */
     margin: 10px 0; /* Margin above and below error messages */
-    font-size: 2em; /* Font size for error messages */
+    font-size: 2em; 
 }
 
 /* Link styling with font size, padding, and no text decoration */
 .link {
-    font-size: 2em; /* Font size for links */
+    font-size: 2em; 
     text-decoration: none; /* Remove underline from links */
     margin: 10px 0; /* Margin above and below links */
     padding: 10px; /* Padding inside links */
@@ -233,26 +275,61 @@ form input {
     text-decoration: underline; /* Underline links on hover */
 }
 
+/* Buttons */
+button {
+    font-size: 1.5em; 
+    padding: 15px 30px; /* Increased padding for a larger button */
+    border-radius: 8px; /* Rounded corners */
+    background-color: #ff4d4d; 
+    color: white; /* Text color */
+    border: none; /* Remove default border */
+    cursor: pointer; /* Change cursor to pointer on hover */
+    display: inline-block; /* Inline-block to respect width and height */
+    text-align: center; 
+    text-decoration: none; /* Remove underline from text */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+/* Hover effect for the button */
+button:hover {
+    background-color: #cc0000; /* Darker red background on hover */
+}
+
 /* Sorting Form Styles */
 
 /* Text styling inside the sorting form */
 #sorting-form p {
-    font-size: 1.2em; /* Font size for sorting form text */
+    font-size: 1.2em; 
     margin: 0 0 10px; /* Margin above and below paragraphs */
-    text-align: centre; /* Centre-align text within sorting form */
+    text-align: center; 
 }
 
 /* Select element styling inside the sorting form */
 #sorting-select {
     padding: 10px; /* Padding inside select element */
     border: 1px solid #ccc; /* Light grey border */
-    font-size: 1em; /* Font size for select element */
-    width: 100%; /* Full width of the select element */
+    font-size: 1em; 
+    width: 100%; 
     margin-bottom: 20px; /* Margin below the select element */
 }
 
-/* Rating display styling with larger font size */
+/* Rating display */
 .rating-text {
-    font-size: 2em; /* Font size for rating text */
-    background-color: #BFCC94; /* Light green background */
+    font-size: 2em; 
+    background-color: #BFCC94; 
+    border-radius: 10px;
+}
+
+/* Links in rating */
+.rating-text a{
+    font-size: 1em; 
+    text-decoration: none; /* Remove underline from links */
+    margin: 10px 0; /* Margin above and below links */
+    padding: 10px; /* Padding inside links */
+    display: inline-block; /* Inline-block display for links */
+}
+
+/* Link hover effect to underline text */
+.rating-text a:hover {
+    text-decoration: underline; /* Underline links on hover */
 }

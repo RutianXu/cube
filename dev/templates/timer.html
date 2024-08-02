@@ -7,12 +7,13 @@
     <div class="container">
         <p id="timer">0.00 s</p>
     
-        <!-- control buttons -->
-        <button class="button" id="controlButton" onclick="controlTimer()">Start</button>
-        <button class="button" onclick="clearTimes()">Clear</button>
+        <!-- control button -->
+        <button id="controlButton" onclick="controlTimer()">Start</button>
+        <p>Hint:Press space bar to control the timer</p>
 
         <!-- list to display saved times -->
-         <h2 id="time-list-heading">Times</h2>
+        <h2 id="time-list-heading">Times</h2>
+        <button onclick="clearTimes()">Clear Times</button>
         <ul id="time-list">
             {% for time in times %}
                 <li>{{ time[0] }} s</li>
@@ -85,7 +86,7 @@
                 }
             };
             xhr.send("time=" + time); // send post request 
-}
+        }
 
         // function to clear all saved times
         function clearTimes() {
@@ -104,23 +105,30 @@
             xhr.send("clear=true"); // send POST request with clear flag
         }
 
-        // add event listener for keydown event
+        // add event listner to prevent spacebar scrolling
+        document.addEventListener('keydown', function(event) {
+            if (event.key === ' ') { 
+                event.preventDefault(); // Prevent default spacebar action (scrolling)
+            }
+        });
+
+        // add event listner to control timer with space bar
         document.addEventListener('keyup', function(event) {
             if (event.code === 'Space') {
                 if (reset) {
-                    event.preventDefault(); // prevent default spacebar action 
-                    resetTimer(); // call resetTimer function
-                    reset = false; // set reset flag to false
+                    resetTimer(); // Call resetTimer function
+                    reset = false; // Set reset flag to false
                 } else {
-                    event.preventDefault(); // prevent default spacebar action 
-                    controlTimer(); // call controlTimer function  
+                    controlTimer(); // Call controlTimer function  
                 }
             }
         });
     </script>
 
 {% else %}
-    <p>Please login or create an account to use the timer.</p>
-    <a href="/login">Login</a>
+    <div class="container">
+        <p class="heading">Please login or create an account to use the timer.</p>
+        <a href="/login" class="link">Login</a>
+    </div>
 {% endif %}
 {% endblock %}

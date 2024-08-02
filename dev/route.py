@@ -53,6 +53,8 @@ def algorithm(algorithm_set):
         # fetch algorithms from the database and order by algorithm id
         cur.execute('SELECT * FROM algorithms WHERE algorithm_set=? ORDER BY id', (algorithm_set,))
     algorithms = cur.fetchall()
+    if algorithms == []:
+        return render_template('404.html'), 404
     conn.close()
 
     # process algorithms for display in the website
@@ -200,6 +202,10 @@ def timer():
 
     return render_template('timer.html', times=times, logged_in=logged_in)
 
+# 404 route
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('404.html'), 404
 
 if __name__ == '__main__':
     app.run(debug=True)

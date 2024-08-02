@@ -55,30 +55,34 @@
             <!-- Filter and display the algorithms -->
             {% for algs in algorithms %}
                 {% if algs[1] == image[0] %}
-          
-                  <p id="algorithm"> {{ algs[3] }}</p>
+                    <div id="alg-container">
+                        <p id="algorithm"> {{ algs[3] }}</p>
 
-                  <!-- Rating form -->
-                  {% if 'username' in session %}
-                  <div class="rating">
-                      <form id="rating-form-{{ algs[0] }}" onsubmit="submitRating(event, '{{ algs[0] }}')">
-                          <div class="form-group">
-                              <label for="rating">Rate this algorithm:</label>
-                              <input type="number" name="rating" min="0" max="5" step="1" required>
-                          </div>
-                          <button type="submit">Submit Rating</button>
-                      </form>
-                  </div>
-                  {% endif %}
+                        <!-- Rating form -->
+                        {% if 'username' in session %}
+                        <div class="rating">
+                            <form id="rating-form-{{ algs[0] }}" onsubmit="submitRating(event, '{{ algs[0] }}')">
+                                <div class="form-group">
+                                    <label for="rating">Rate this algorithm:</label>
+                                    <input type="number" name="rating" min="0" max="5" step="1" required>
+                                </div>
+                                <button type="submit">Submit Rating</button>
+                            </form>
+                        </div>
+                        {% else %}
+                        <div class="rating-text">
+                            <a href="/login">Login to rate algorithms</a>
+                        </div>
+                        {% endif %}
 
-                  <!-- Average rating display -->
-                  {% if algs[0] in ratings %}
-                      <p class="rating-text" id="rating-display-{{ algs[0] }}">Average Rating: {{ ratings[algs[0]] }}</p>
-                  {% else %}
-                      <p class="rating-text" id="rating-display-{{ algs[0] }}">No Ratings Yet</p>
-                  {% endif %}
-                          {% endif %}
-        
+                            <!-- Average rating display -->
+                            {% if algs[0] in ratings %}
+                                <p class="rating-text" id="rating-display-{{ algs[0] }}">Average Rating: {{ ratings[algs[0]] }}</p>
+                            {% else %}
+                                <p class="rating-text" id="rating-display-{{ algs[0] }}">No Ratings Yet</p>
+                            {% endif %}
+                    </div>
+                {% endif %}      
             {% endfor %}
         </div>
     {% endfor %}
