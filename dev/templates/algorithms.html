@@ -56,7 +56,8 @@
             {% for algs in algorithms %}
                 {% if algs[1] == image[0] %}
                     <div id="alg-container">
-                        <p id="algorithm"> {{ algs[3] }}</p>
+
+                        <p id="algorithm">{{ algs[3] }}</p>
 
                         <!-- Rating form -->
                         {% if 'username' in session %}

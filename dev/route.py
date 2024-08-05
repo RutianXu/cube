@@ -7,6 +7,24 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = token_hex(32)
 
 
+# Function to execute queries
+def execute_query(query, parameters=(), fetch_one=False, fetch_all=False, commit=False):
+    conn = sqlite3.connect('cube.db')
+    cur = conn.cursor()
+    cur.execute(query, parameters)
+    if commit:
+        conn.commit()
+        result = None
+    elif fetch_one:
+        result = cur.fetchone()  
+    elif fetch_all:
+        result = cur.fetchall()  
+    else:
+        result = None
+    conn.close()
+    return result
+
+
 # homepage route
 @app.route('/')
 def homepage():
@@ -16,7 +34,7 @@ def homepage():
 # algorithm route
 @app.route('/algorithms/<algorithm_set>', methods=['GET', 'POST'])
 def algorithm(algorithm_set):
-    sorting_way = 'id' # default sorting method for algoirthms 
+    sorting_way = 'id'  # default sorting method for algoirthms 
 
     if request.method == 'POST':
         # form submission for how algoirthms are sorted
@@ -30,32 +48,24 @@ def algorithm(algorithm_set):
             rating = request.form.get('rating')
 
             # insert the rating into the database
-            conn = sqlite3.connect('cube.db')
-            cur = conn.cursor()
-            cur.execute('SELECT * FROM ratings WHERE algorithm_id = ? AND user_id = ?', (algorithm_id, user_id))  # fetch an existing rating from the database
-            check_rating = cur.fetchall()
-            if check_rating == []:  # check if a rating exists in the database
-                # insert rating if a rating is not exist in the database
-                cur.execute('INSERT INTO ratings (algorithm_id, user_id, rating) VALUES (?, ?, ?)', (algorithm_id, user_id, rating))
+            check_rating = execute_query('SELECT * FROM ratings WHERE algorithm_id = ? AND user_id = ?', (algorithm_id, user_id,), fetch_one=True)
+            if check_rating is None:  # check if user rated the same algorithm 
+                # insert rating 
+                execute_query('INSERT INTO ratings (algorithm_id, user_id, rating) VALUES (?, ?, ?)', (algorithm_id, user_id, rating,), commit=True)
             else:
-                # update rating if a rating exist in the database
-                cur.execute('UPDATE ratings SET rating = ? WHERE user_id = ? AND algorithm_id = ?', (rating, user_id, algorithm_id))
-            conn.commit()
-            conn.close()
+                # update rating 
+                execute_query('UPDATE ratings SET rating = ? WHERE user_id = ? AND algorithm_id = ?', (rating, user_id, algorithm_id,), commit=True)
 
     # fetch algorithms from the database
-    conn = sqlite3.connect('cube.db')
-    cur = conn.cursor()
     if sorting_way == 'name':
         # fetch algorithms from the database and order by algorithm name
-        cur.execute('SELECT * FROM algorithms WHERE algorithm_set=? ORDER BY name', (algorithm_set,))
+        algorithms = execute_query('SELECT * FROM algorithms WHERE algorithm_set=? ORDER BY name', (algorithm_set,), fetch_all=True)
     else:
         # fetch algorithms from the database and order by algorithm id
-        cur.execute('SELECT * FROM algorithms WHERE algorithm_set=? ORDER BY id', (algorithm_set,))
-    algorithms = cur.fetchall()
-    if algorithms == []:
-        return render_template('404.html'), 404
-    conn.close()
+        algorithms = execute_query('SELECT * FROM algorithms WHERE algorithm_set=? ORDER BY id', (algorithm_set,), fetch_all=True)
+
+    if algorithms is None:
+        return render_template('404.html')
 
     # process algorithms for display in the website
     algorithms = [list(item) for item in algorithms]  # store all algorithms in a list
@@ -69,11 +79,7 @@ def algorithm(algorithm_set):
             images.append(img)
 
     # fetch ratings from the database
-    conn = sqlite3.connect('cube.db')
-    cur = conn.cursor()
-    cur.execute('SELECT algorithm_id, ROUND(AVG(rating), 1) AS average_rating, COUNT(rating) AS num_ratings FROM ratings GROUP BY algorithm_id')
-    ratings = cur.fetchall()
-    conn.close()
+    ratings = execute_query('SELECT algorithm_id, ROUND(AVG(rating), 1) AS average_rating, COUNT(rating) AS num_ratings FROM ratings GROUP BY algorithm_id', fetch_all=True)
     ratings = {item[0]: item[1] for item in ratings}
 
     return render_template('algorithms.html', algorithms=algorithms, images=images, ratings=ratings, algorithm_set=algorithm_set, sorting_way=sorting_way)
@@ -82,6 +88,7 @@ def algorithm(algorithm_set):
 # registration route
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+
     username_exist = False  # flag for checking if username exist in the database
     registered = False  # flag for checking if user registered successfully
 
@@ -91,19 +98,14 @@ def register():
         password = request.form.get('password')
 
         # check if the account exist in the database
-        conn = sqlite3.connect('cube.db')
-        cur = conn.cursor()
-        cur.execute('SELECT * FROM users WHERE username=?', (username,))  # fetch accounts with the same username
-        check_username = cur.fetchall()
-        if not check_username:
+        check_username = execute_query('SELECT * FROM users WHERE username=?', (username,), fetch_one=True)  # fetch accounts with the same username
+        if check_username is None:
             # insert the new user into the database
-            cur.execute('INSERT INTO users (username, password) VALUES (?, ?)', (username, password))
-            conn.commit()
+            execute_query('INSERT INTO users (username, password) VALUES (?, ?)', (username, password), commit=True)
             registered = True
         else:
             # tell the user to use a different username
             username_exist = True
-        conn.close()
 
     return render_template('register.html', username_exist=username_exist, registered=registered)
 
@@ -112,7 +114,7 @@ def register():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     logged_in = False  # flag for checking if user is logged in for direct them to homepage
-    wrong_details = False  # flag for checking if user's username and password is correct
+    wrong_account = False  # flag for checking if user's username and password is correct
 
     # form submission for login
     if request.method == 'POST':
@@ -120,58 +122,48 @@ def login():
         password = request.form.get('password')
 
         # check if the user exists in the database
-        conn = sqlite3.connect('cube.db')
-        cur = conn.cursor()
-        cur.execute('SELECT * FROM users WHERE username=? AND password=?', (username, password))
-        user = cur.fetchone()
-        conn.close()
+        user = execute_query('SELECT * FROM users WHERE username=? AND password=?', (username, password), fetch_one=True)
 
         # if user exists, to login and set up session variables
-        if user:
+        if user is not None:
             logged_in = True
             session['username'] = username
             session['user_id'] = user[0]
         else:
             # tell user if the username or password is wrong
-            wrong_details = True
-    return render_template('login.html', logged_in=logged_in, wrong_details=wrong_details)
+            wrong_account = True
+    return render_template('login.html', logged_in=logged_in, wrong_account=wrong_account)
 
 
 # logout route
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     logged_out = False  # flag for checking if user logged out
-    delete_account = False # flag for checking if account deleted
+    delete_account = False  # flag for checking if account deleted
     if request.method == 'POST':
         if 'logout' in request.form or 'delete' in request.form:
             if request.form.get('delete') == 'delete':
                 # delete user account, ratings, times in the database
                 user_id = session.get('user_id')
-                conn = sqlite3.connect('cube.db')
-                cur = conn.cursor()
-                cur.execute('DELETE FROM users WHERE id = ?', (user_id,))
-                cur.execute('DELETE FROM ratings WHERE user_id = ?', (user_id,))
-                cur.execute('DELETE FROM timer WHERE user_id = ?', (user_id,))
-                conn.commit()
-                conn.close()
-                session.pop('username')
-                session.pop('user_id')
-                delete_account = True
+                execute_query('DELETE FROM users WHERE id = ?', (user_id,), commit=True)
+                execute_query('DELETE FROM ratings WHERE user_id = ?', (user_id,), commit=True)
+                execute_query('DELETE FROM timer WHERE user_id = ?', (user_id,), commit=True)
+                delete_account = True  # Set delete account flag to True
             else:
-                # remove session variables
-                session.pop('username')
-                session.pop('user_id')
-                logged_out = True
+                logged_out = True  # Set logged out flag to True
+            # remove session variables
+            session.pop('username')
+            session.pop('user_id')
     return render_template('logout.html', logged_out=logged_out, delete_account=delete_account)
 
 
 # timer route
 @app.route('/timer', methods=['GET', 'POST'])
 def timer():
-    # if user is not logged in, redirect to login page
+    # Check if user login
     if 'user_id' not in session:
         logged_in = False  # flag for checking if user is logged in
-        times = None
+        times = None  # Set times to None so the saved times in the database will not display
     else:
         user_id = session.get('user_id')
         logged_in = True
@@ -180,32 +172,22 @@ def timer():
             # save time in database
             if 'time' in request.form:
                 time_value = request.form.get('time')
-                conn = sqlite3.connect('cube.db')
-                cur = conn.cursor()
-                cur.execute('INSERT INTO timer (time, user_id) VALUES (?, ?)', (time_value, user_id))
-                conn.commit()
-                conn.close()
+                execute_query('INSERT INTO timer (time, user_id) VALUES (?, ?)', (time_value, user_id), commit=True)
             # clear times in database
             elif 'clear' in request.form:
-                conn = sqlite3.connect('cube.db')
-                cur = conn.cursor()
-                cur.execute('DELETE FROM timer WHERE user_id=?', (user_id,))
-                conn.commit()
-                conn.close()
+                execute_query('DELETE FROM timer WHERE user_id=?', (user_id,), commit=True)
 
         # fetch times from the database
-        conn = sqlite3.connect('cube.db')
-        cur = conn.cursor()
-        cur.execute('SELECT time FROM timer WHERE user_id=?', (user_id,))
-        times = cur.fetchall()
-        conn.close()
+        times = execute_query('SELECT time FROM timer WHERE user_id=?', (user_id,), fetch_all=True)
 
     return render_template('timer.html', times=times, logged_in=logged_in)
+
 
 # 404 route
 @app.errorhandler(404)
 def page_not_found(error):
-    return render_template('404.html'), 404
+    return render_template('404.html')
+
 
 if __name__ == '__main__':
     app.run(debug=True)
