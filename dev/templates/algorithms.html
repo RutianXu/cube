@@ -2,9 +2,9 @@
 {% block content %}
 <div>
     <h1 class="heading">{{ algorithm_set | upper }}</h1>
-    <div>
+    <div class="container" class="description">
         {% if algorithm_set == 'pll'%}
-            <p class="container" class="description">
+            <p>
                 PLL (Permutation of the Last Layer) algorithms are used in the final stage of solving 
                 a Rubik's Cube to correctly position the pieces of the last layer after their orientation
                 has been set. These algorithms ensure that each piece is moved into its correct spot
@@ -13,7 +13,7 @@
                 and achieving a fully solved state.
             </p>
         {% elif algorithm_set == 'oll' %}
-            <p class="container" class="description">
+            <p>
                 OLL (Orientation of the Last Layer) algorithms are used in the intermediate
                 stage of solving a Rubik's Cube to orient all pieces on the last layer so
                 that the top face of the cube is uniform in color. This step is crucial
@@ -23,6 +23,8 @@
                  more straightforward and efficient.
             </p>
         {% endif %}
+        <p class="error-message">Instructions on how to do use algorithms are on the Notation page</p>
+        <a href="/notation" class="link">Click here to Notation page</a>
     </div>
     <div class="container">
         <!-- Form to submit sorting options -->
@@ -64,7 +66,7 @@
                         <div class="rating">
                             <form id="rating-form-{{ algs[0] }}" onsubmit="submitRating(event, '{{ algs[0] }}')">
                                 <div class="form-group">
-                                    <label for="rating">Rate this algorithm:</label>
+                                    <label for="rating">Rate this algorithm(from 0 to 5):</label>
                                     <input type="number" name="rating" min="0" max="5" step="1" required>
                                 </div>
                                 <button type="submit">Submit Rating</button>

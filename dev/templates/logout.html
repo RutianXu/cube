@@ -19,10 +19,18 @@
         </form>
 
         <!-- form submission for delete account-->
-        <form method="post">
+        <form method="post" onsubmit="confirmSubmission(event)">
             <input type="hidden" name="delete" value="delete">
             <button type="submit">Delete Account</button>
         </form>
     {% endif %}
 </div>
+<script>
+    function confirmSubmission(event) {
+        const userConfirmed = confirm("Are you sure you want to delete account?");
+        if (!userConfirmed) {
+            event.preventDefault();
+        }
+    }
+</script>
 {% endblock %}

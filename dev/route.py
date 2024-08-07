@@ -25,13 +25,13 @@ def execute_query(query, parameters=(), fetch_one=False, fetch_all=False, commit
     return result
 
 
-# homepage route
+# Homepage route
 @app.route('/')
 def homepage():
     return render_template('home.html')
 
 
-# algorithm route
+# Algorithm route
 @app.route('/algorithms/<algorithm_set>', methods=['GET', 'POST'])
 def algorithm(algorithm_set):
     sorting_way = 'id'  # default sorting method for algoirthms 
@@ -85,10 +85,9 @@ def algorithm(algorithm_set):
     return render_template('algorithms.html', algorithms=algorithms, images=images, ratings=ratings, algorithm_set=algorithm_set, sorting_way=sorting_way)
 
 
-# registration route
+# Registration route
 @app.route('/register', methods=['GET', 'POST'])
 def register():
-
     username_exist = False  # flag for checking if username exist in the database
     registered = False  # flag for checking if user registered successfully
 
@@ -110,7 +109,7 @@ def register():
     return render_template('register.html', username_exist=username_exist, registered=registered)
 
 
-# login route
+# Login route
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     logged_in = False  # flag for checking if user is logged in for direct them to homepage
@@ -135,7 +134,7 @@ def login():
     return render_template('login.html', logged_in=logged_in, wrong_account=wrong_account)
 
 
-# logout route
+# Logout route
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     logged_out = False  # flag for checking if user logged out
@@ -157,7 +156,7 @@ def logout():
     return render_template('logout.html', logged_out=logged_out, delete_account=delete_account)
 
 
-# timer route
+# Timer route
 @app.route('/timer', methods=['GET', 'POST'])
 def timer():
     # Check if user login
@@ -181,6 +180,12 @@ def timer():
         times = execute_query('SELECT time FROM timer WHERE user_id=?', (user_id,), fetch_all=True)
 
     return render_template('timer.html', times=times, logged_in=logged_in)
+
+
+# Notation route
+@app.route('/notation')
+def notation():
+    return render_template('notation.html')
 
 
 # 404 route
