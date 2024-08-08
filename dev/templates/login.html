@@ -28,8 +28,10 @@
     {% endif %}
 
     <!-- error message if username or password is incorrect -->
-    {% if wrong_account %}
-        <p class="error-message">Incorrect username or password!</p>
+    {% if wrong_username %}
+        <p class="error-message">Account Does Not Exists!</p>
+    {% elif wrong_password %}
+    <p class="error-message">Wrong Password!</p>
     {% endif %}
     </div>
 {% endblock %} 

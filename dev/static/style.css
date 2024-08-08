@@ -302,6 +302,7 @@ button:hover {
     font-size: 1.2em; 
     margin: 0 0 10px; /* Margin above and below paragraphs */
     text-align: center; 
+    color: #ff0000;
 }
 
 /* Select element styling inside the sorting form */

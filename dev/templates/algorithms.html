@@ -1,9 +1,12 @@
 {% extends "Layout.html" %}
 {% block content %}
 <div>
+    <!-- Page heading based on the algorithm set -->
     <h1 class="heading">{{ algorithm_set | upper }}</h1>
+    
     <div class="container" class="description">
-        {% if algorithm_set == 'pll'%}
+        <!-- Description based on the selected algorithm set -->
+        {% if algorithm_set == 'pll' %}
             <p>
                 PLL (Permutation of the Last Layer) algorithms are used in the final stage of solving 
                 a Rubik's Cube to correctly position the pieces of the last layer after their orientation
@@ -20,23 +23,26 @@
                 as it sets up the final phase, where the pieces are permuted into their
                 correct positions. By mastering OLL algorithms, solvers can ensure that
                 the last layer is correctly oriented, making the final stage of the solve
-                 more straightforward and efficient.
+                more straightforward and efficient.
             </p>
         {% endif %}
-        <p class="error-message">Instructions on how to do use algorithms are on the Notation page</p>
+        
+        <!-- Instructions for using algorithms and link to the Notation page -->
+        <p class="error-message">Instructions on how to use algorithms are on the Notation page</p>
         <a href="/notation" class="link">Click here to Notation page</a>
     </div>
+    
     <div class="container">
         <!-- Form to submit sorting options -->
         <form method="post" id="sorting-form">
-            <!-- Display sorting method -->
+            <!-- Display current sorting method -->
             {% if sorting_way == 'name' %}
                 <p>Sort algorithms by NAME</p>
             {% else %}
                 <p>Sort algorithms by DEFAULT</p>
             {% endif %}
 
-            <!-- Sorting options -->
+            <!-- Sorting options dropdown -->
             <select id="sorting-select" name="sorting-select">
                 <option value="">Select an option to sort algorithms</option>
                 <option value="id">Default</option>
@@ -46,6 +52,7 @@
         </form>
     </div>
 
+    <!-- Loop through images to display each algorithm -->
     {% for image in images %}
         <div class="container">
             <!-- Display the algorithm name -->
@@ -54,19 +61,20 @@
             <!-- Display the algorithm image -->
             <img src="data:image/jpeg;base64,{{ image[1] }}" alt="Algorithm Image">
 
-            <!-- Filter and display the algorithms -->
+            <!-- Loop through algorithms to match and display details -->
             {% for algs in algorithms %}
                 {% if algs[1] == image[0] %}
                     <div id="alg-container">
 
+                        <!-- Display the algorithm description -->
                         <p id="algorithm">{{ algs[3] }}</p>
 
-                        <!-- Rating form -->
+                        <!-- Rating form (visible if user is logged in) -->
                         {% if 'username' in session %}
                         <div class="rating">
                             <form id="rating-form-{{ algs[0] }}" onsubmit="submitRating(event, '{{ algs[0] }}')">
                                 <div class="form-group">
-                                    <label for="rating">Rate this algorithm(from 0 to 5):</label>
+                                    <label for="rating">Rate this algorithm (from 0 to 5):</label>
                                     <input type="number" name="rating" min="0" max="5" step="1" required>
                                 </div>
                                 <button type="submit">Submit Rating</button>
@@ -74,16 +82,17 @@
                         </div>
                         {% else %}
                         <div class="rating-text">
+                            <!-- Prompt user to log in to rate algorithms -->
                             <a href="/login">Login to rate algorithms</a>
                         </div>
                         {% endif %}
 
-                            <!-- Average rating display -->
-                            {% if algs[0] in ratings %}
-                                <p class="rating-text" id="rating-display-{{ algs[0] }}">Average Rating: {{ ratings[algs[0]] }}</p>
-                            {% else %}
-                                <p class="rating-text" id="rating-display-{{ algs[0] }}">No Ratings Yet</p>
-                            {% endif %}
+                        <!-- Display the average rating for the algorithm -->
+                        {% if algs[0] in ratings %}
+                            <p class="rating-text" id="rating-display-{{ algs[0] }}">Average Rating: {{ ratings[algs[0]] }}</p>
+                        {% else %}
+                            <p class="rating-text" id="rating-display-{{ algs[0] }}">No Ratings Yet</p>
+                        {% endif %}
                     </div>
                 {% endif %}      
             {% endfor %}
@@ -93,7 +102,7 @@
 
 <script>
     function submitRating(event, algorithmId) {
-        event.preventDefault();
+        event.preventDefault(); // Prevent default form submission
 
         // Set up XMLHttpRequest
         var xhr = new XMLHttpRequest();
@@ -106,13 +115,13 @@
         var data = 'algorithm_id=' + algorithmId + '&rating=' + rating;
 
         // Notify user to reload page to see new average rating
-        xhr.onreadystatechange = function(){
-            if (xhr.readyState == 4 && xhr.status == 200){
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4 && xhr.status == 200) {
                 document.getElementById("rating-display-" + algorithmId).innerHTML = "Rating Submitted! Reload to see new average rating.";
             }
         };
         
-        // Send data to route.py and remove the form
+        // Send data to route and remove the form
         xhr.send(data);
         form.remove();
     }

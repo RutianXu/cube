@@ -3,9 +3,7 @@
         <img src="/static/logo.png" alt="logo" class="logo"> 
     </a>
     <a href="/" class="{% if request.path == '/' %}active{% endif %}">Home</a>
-    <a href="/timer" class="{% if request.path == '/timer' %}active{% endif %}">Timer</a>
-    <a href="/notation" class="{% if request.path == '/notation' %}active{% endif %}">Notation</a>
-
+    
     <!-- algorithm page links -->
     <div class="dropdown">
         <button class="dropbtn {% if request.path.startswith('/algorithms/') %}active{% endif %}">Algorithms</button>
@@ -14,6 +12,9 @@
             <a href="/algorithms/pll" class="{% if request.path == '/algorithms/pll' %}active{% endif %}">PLL</a>  
         </div>
     </div>
+
+    <a href="/timer" class="{% if request.path == '/timer' %}active{% endif %}">Timer</a>
+    <a href="/notation" class="{% if request.path == '/notation' %}active{% endif %}">Notation</a>
 
     <!-- check if user login -->
     <div>
