@@ -3,26 +3,28 @@
 
 <h2 class="heading">Logout</h2>
 <div class="container">
-    {% if logged_out %}
+    {% if 'username' in session %}
+        {% if delete_account %}
+            <!-- link to home after ldelete -->
+            <p class="heading">Account deleted!</p>
+            <a href="/" class="link">Return to home</a>
+        {% else %}
+            <!-- form submission for logout -->
+            <form method="post">
+                <input type="hidden" name="logout" value="logout">
+                <button type="submit">Logout</button>
+            </form>
+
+            <!-- form submission for delete account-->
+            <form method="post" onsubmit="confirmSubmission(event)">
+                <input type="hidden" name="delete" value="delete">
+                <button type="submit">Delete Account</button>
+            </form>
+        {% endif %}
+    {% else %}
         <!-- link to home after logout-->
         <p class="heading">You are logged out!</p>
         <a href="/" class="link">Return to home</a>
-    {% elif delete_account %}
-        <!-- link to home after ldelete -->
-        <p class="heading">Account deleted!</p>
-        <a href="/" class="link">Return to home</a>
-    {% else %}
-        <!-- form submission for logout -->
-        <form method="post">
-            <input type="hidden" name="logout" value="logout">
-            <button type="submit">Logout</button>
-        </form>
-
-        <!-- form submission for delete account-->
-        <form method="post" onsubmit="confirmSubmission(event)">
-            <input type="hidden" name="delete" value="delete">
-            <button type="submit">Delete Account</button>
-        </form>
     {% endif %}
 </div>
 <script>

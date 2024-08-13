@@ -1,133 +1,131 @@
 {% extends "layout.html" %}
-
 {% block content %}
-{% if logged_in %}
-<h1 class="heading">Timer</h1>
-    <!-- timer display -->
-    <div class="container">
-        <p id="timer">0.00 s</p>
-    
-        <!-- control button -->
-        <button id="controlButton" onclick="controlTimer()">Start</button>
-        <p>Hint:Press space bar to control the timer</p>
+{% if 'username' in session %}
+    <h1 class="heading">Timer</h1>
+        <!-- timer display -->
+        <div class="container">
+            <p id="timer">0.00 s</p>
+        
+            <!-- control button -->
+            <button id="controlButton" onclick="controlTimer()">Start</button>
+            <p>Hint:Press space bar to control the timer</p>
 
-        <!-- list to display saved times -->
-        <h2 id="time-list-heading">Times</h2>
-        <button onclick="clearTimes()">Clear Times</button>
-        <ul id="time-list">
-            {% for time in times %}
-                <li>{{ time[0] }} s</li>
-            {% endfor %}
-        </ul>
-    </div>
-    
-    <script>
-        let timer; // timer interval
-        let totalMilliseconds = 0; // total milliseconds elapsed
-        let isRunning = false; // flag to track if timer is running
-        let reset = false; // flag to track if time needs to reset
+            <!-- list to display saved times -->
+            <h2 id="time-list-heading">Times</h2>
+            <button onclick="clearTimes()">Clear Times</button>
+            <ul id="time-list">
+                {% for time in times %}
+                    <li>{{ time[0] }} s</li>
+                {% endfor %}
+            </ul>
+        </div>
+        
+        <script>
+            let timer; // timer interval
+            let totalMilliseconds = 0; // total milliseconds elapsed
+            let isRunning = false; // flag to track if timer is running
+            let reset = false; // flag to track if time needs to reset
 
-        // function to control timer start and stop
-        function controlTimer() {
-            if (!isRunning) {
-                startTimer(); // start timer if not running
-            } else {
-                stopTimer(); // stop timer if running
-                saveTime(totalMilliseconds / 1000); // save time when stopping
-            }
-        }
-
-        // function to start the timer
-        function startTimer() {
-            if (!timer) {
-                timer = setInterval(setTime, 10); // set interval to update time every 10 milliseconds
-            }
-            isRunning = true; // set running flag to true
-            document.getElementById("controlButton").innerHTML = "Stop"; // change button text to "Stop"
-        }
-
-        // function to stop the timer
-        function stopTimer() {
-            clearInterval(timer); // clear the timer interval
-            timer = null; // reset timer variable
-            isRunning = false; // set running flag to false
-            document.getElementById("controlButton").innerHTML = "Reset"; // change button to Reset
-            document.getElementById("controlButton").onclick = resetTimer; // change button to resetTimer
-            reset = true; // set reset flag to true
-        }
-
-        // function to reset the timer
-        function resetTimer() {
-            totalMilliseconds = 0; // reset total milliseconds
-            document.getElementById("timer").innerHTML = "0.00 s"; // reset timer display
-            document.getElementById("controlButton").innerHTML = "Start"; // change button Start
-            document.getElementById("controlButton").onclick = controlTimer; // change button to controlTimer
-        }
-
-        // function to update the timer display
-        function setTime() {
-            totalMilliseconds += 10; // add total milliseconds by 10 per interval
-            const totalSeconds = totalMilliseconds / 1000; // calculate total seconds
-            document.getElementById("timer").innerHTML = totalSeconds.toFixed(2) + " s"; // update timer display
-        }
-
-        // function to save time 
-        function saveTime(time) {
-            const xhr = new XMLHttpRequest(); // create new XMLHttpRequest object
-            xhr.open("POST", "/timer", true); // set up post request
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); // set request header
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState == 4 && xhr.status == 200) { // check if request is complete and successful
-                    // create new list item for the saved time
-                    const li = document.createElement("li");
-                    li.textContent = time.toFixed(2) + " s";
-                    const timeList = document.getElementById("time-list");
-                    timeList.insertBefore(li, timeList.firstChild);
+            // function to control timer start and stop
+            function controlTimer() {
+                if (!isRunning) {
+                    startTimer(); // start timer if not running
+                } else {
+                    stopTimer(); // stop timer if running
+                    saveTime(totalMilliseconds / 1000); // save time when stopping
                 }
-            };
-            xhr.send("time=" + time); // send post request 
-        }
+            }
 
-        // function to clear all saved times
-        function clearTimes() {
-            const xhr = new XMLHttpRequest(); // create new XMLHttpRequest object
-            xhr.open("POST", "/timer", true); // set up POST request to /timer route
-            xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); // set request header
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState == 4 && xhr.status == 200) { // check if request is complete and successful
-                    // remove all child nodes (list items) from the time list
-                    const timeList = document.getElementById("time-list");
-                    while (timeList.firstChild) {
-                        timeList.removeChild(timeList.firstChild);
+            // function to start the timer
+            function startTimer() {
+                if (!timer) {
+                    timer = setInterval(setTime, 10); // set interval to update time every 10 milliseconds
+                }
+                isRunning = true; // set running flag to true
+                document.getElementById("controlButton").innerHTML = "Stop"; // change button text to "Stop"
+            }
+
+            // function to stop the timer
+            function stopTimer() {
+                clearInterval(timer); // clear the timer interval
+                timer = null; // reset timer variable
+                isRunning = false; // set running flag to false
+                document.getElementById("controlButton").innerHTML = "Reset"; // change button to Reset
+                document.getElementById("controlButton").onclick = resetTimer; // change button to resetTimer
+                reset = true; // set reset flag to true
+            }
+
+            // function to reset the timer
+            function resetTimer() {
+                totalMilliseconds = 0; // reset total milliseconds
+                document.getElementById("timer").innerHTML = "0.00 s"; // reset timer display
+                document.getElementById("controlButton").innerHTML = "Start"; // change button Start
+                document.getElementById("controlButton").onclick = controlTimer; // change button to controlTimer
+            }
+
+            // function to update the timer display
+            function setTime() {
+                totalMilliseconds += 10; // add total milliseconds by 10 per interval
+                const totalSeconds = totalMilliseconds / 1000; // calculate total seconds
+                document.getElementById("timer").innerHTML = totalSeconds.toFixed(2) + " s"; // update timer display
+            }
+
+            // function to save time 
+            function saveTime(time) {
+                const xhr = new XMLHttpRequest(); // create new XMLHttpRequest object
+                xhr.open("POST", "/timer", true); // set up post request
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); // set request header
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4 && xhr.status == 200) { // check if request is complete and successful
+                        // create new list item for the saved time
+                        const li = document.createElement("li");
+                        li.textContent = time.toFixed(2) + " s";
+                        const timeList = document.getElementById("time-list");
+                        timeList.insertBefore(li, timeList.firstChild);
+                    }
+                };
+                xhr.send("time=" + time); // send post request 
+            }
+
+            // function to clear all saved times
+            function clearTimes() {
+                const xhr = new XMLHttpRequest(); // create new XMLHttpRequest object
+                xhr.open("POST", "/timer", true); // set up POST request to /timer route
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); // set request header
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4 && xhr.status == 200) { // check if request is complete and successful
+                        // remove all child nodes (list items) from the time list
+                        const timeList = document.getElementById("time-list");
+                        while (timeList.firstChild) {
+                            timeList.removeChild(timeList.firstChild);
+                        }
+                    }
+                };
+                xhr.send("clear=true"); // send POST request with clear flag
+            }
+
+            // add event listner to prevent spacebar scrolling
+            document.addEventListener('keydown', function(event) {
+                if (event.key === ' ') { 
+                    event.preventDefault(); // Prevent default spacebar action (scrolling)
+                }
+            });
+
+            // add event listner to control timer with space bar
+            document.addEventListener('keyup', function(event) {
+                if (event.code === 'Space') {
+                    if (reset) {
+                        resetTimer(); // Call resetTimer function
+                        reset = false; // Set reset flag to false
+                    } else {
+                        controlTimer(); // Call controlTimer function  
                     }
                 }
-            };
-            xhr.send("clear=true"); // send POST request with clear flag
-        }
-
-        // add event listner to prevent spacebar scrolling
-        document.addEventListener('keydown', function(event) {
-            if (event.key === ' ') { 
-                event.preventDefault(); // Prevent default spacebar action (scrolling)
-            }
-        });
-
-        // add event listner to control timer with space bar
-        document.addEventListener('keyup', function(event) {
-            if (event.code === 'Space') {
-                if (reset) {
-                    resetTimer(); // Call resetTimer function
-                    reset = false; // Set reset flag to false
-                } else {
-                    controlTimer(); // Call controlTimer function  
-                }
-            }
-        });
-    </script>
-
+            });
+        </script>
 {% else %}
     <div class="container">
-        <p class="heading">Please login or create an account to use the timer.</p>
+        <p class="error-message">Please login or create an account to use the timer.</p>
         <a href="/login" class="link">Login</a>
     </div>
 {% endif %}

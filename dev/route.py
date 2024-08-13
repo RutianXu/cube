@@ -195,11 +195,9 @@ def login():
 
     Returns:
         Render login template
-        logged_in (bool): Flag indicating if the user is logged in
         wrong_username (bool): Flag indicating if the username is incorrect
         wrong_password (bool): Flag indicating if the password is incorrect
     """
-    logged_in = False  # Flag for checking if user is logged in for direct them to homepage
     wrong_username = False  # Flag for checking if user's username is correct
     wrong_password = False  # Flag for checking if user's password is correct
 
@@ -223,7 +221,6 @@ def login():
                 wrong_password = True
             else:
                 # Set up session variables
-                logged_in = True
                 session['username'] = username
                 session['user_id'] = check_password[0]
         else:
@@ -231,7 +228,6 @@ def login():
 
     return render_template(
         'login.html',
-        logged_in=logged_in,
         wrong_username=wrong_username,
         wrong_password=wrong_password
     )
@@ -245,11 +241,9 @@ def logout():
 
     Returns:
         Render logout template
-        logged_out (bool): Flag indicating if the user has logged out
-        delete_account (bool): Flag indicating if the account has been deleted
+        delete_account (bool): Flag indicating if the account has been deleted.
     """
-    logged_out = False  # Flag for checking if user logged out
-    delete_account = False  # Flag for checking if account deleted
+    delete_account = False
     if request.method == 'POST':
         if 'delete' in request.form:
             # Form submission for delelte account and delete account in the database
@@ -266,10 +260,7 @@ def logout():
                 'DELETE FROM timer WHERE user_id = ?',
                 (user_id,), commit=True
             )
-            delete_account = True  
-        if 'logout' in request.form:
-            # Form submisstion for logout
-            logged_out = True
+            delete_account = True
         if 'logout' in request.form or 'delete' in request.form:
             # Remove session variables
             session.pop('username')
@@ -277,7 +268,6 @@ def logout():
 
     return render_template(
         'logout.html',
-        logged_out=logged_out,
         delete_account=delete_account
     )
 
@@ -291,15 +281,12 @@ def timer():
     Returns:
         Render timer template
         times (list or None): List of saved times or None if the user is not logged in.
-        logged_in (bool): Flag indicating if the user is logged in.
     """
     # Check if user login
     if 'user_id' not in session:
-        logged_in = False  # Flag for checking if user is logged in
         times = None  # Set times to None so the saved times in the database will not display
     else:
         user_id = session.get('user_id')
-        logged_in = True
         if request.method == 'POST':
             if 'time' in request.form:
                 # Save time in database
@@ -323,7 +310,6 @@ def timer():
     return render_template(
         'timer.html',
         times=times,
-        logged_in=logged_in
     )
 
 

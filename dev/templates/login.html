@@ -4,7 +4,7 @@
     <h2 class="heading">Login</h2> 
     <div class="container">
     <!-- check if user logged in succesfully -->
-    {% if logged_in %}
+    {% if 'username' in session %}
         <p class="heading">You are logged in!</p>
         <a href="/" class="link">Return to home</a>
 

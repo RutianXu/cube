@@ -19,6 +19,7 @@ body {
 
 /* Container for centralised content with padding and box shadow */
 .container {
+    font-size: 1.2em;
     display: grid; /* Enable grid layout */
     gap: 20px; /* Space between grid items */
     text-align: center; 

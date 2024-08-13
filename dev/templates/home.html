@@ -1,7 +1,7 @@
 {% extends "Layout.html" %}
 {% block content %} 
 <h1 class="heading">HOME</h1>
-<p class="container" class="description">
+<p class="container">
   Welcome to the Rubik’s Cube Algorithms website!
   This platform is designed to help enthusiasts improve your cube-solving skills,
   particularly at the intermediate level. It offers a comprehensive collection of
@@ -24,6 +24,16 @@
       </a>
   </div>
 </div>
-
-
+<div class="container">
+  <p>
+    In addition to a comprehensive collection of algorithms,
+    our site also features a timer to track
+    your solving speed and a notations page to help you
+    master the moves required for each algorithm. Whether
+    you're timing your solves or learning new techniques,
+    these tools are here to enhance your cube-solving experience.
+  </p>
+  <a href="/timer" class="link">Click here to the Timer</a>
+  <a href="/notation" class="link">Click here to the Notation page</a>
+</div>
 {% endblock %}
