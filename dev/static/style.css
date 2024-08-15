@@ -173,9 +173,14 @@ footer a:hover {
 /* Container for images with flex layout, spacing, and padding */
 .image-container {
     display: flex; /* Flexbox layout for images */
-    justify-content: center; /* Centre-align images horizontally */
-    gap: 20px; 
+    justify-content: center; /* Center-align images horizontally */
+    gap: 20px; /* Space between images */
     padding: 20px; /* Padding inside the image container */
+    background-color: white; /* Change background to white */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Box shadow similar to the grid container */
+    margin: 20px auto; /* Center the container with automatic margins */
+    max-width: 600px; 
+    text-align: center; 
 }
 
 /* Style for individual image items with vertical alignment */

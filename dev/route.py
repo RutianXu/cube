@@ -39,6 +39,17 @@ def execute_query(query, parameters=(), fetch_one=False, fetch_all=False, commit
     return result
 
 
+# Fucntion to check errors from register and login form submissions
+def check_error(username, password):
+    exceed_limit = False
+    empty_input = False
+    if username == '' or password == '':
+        empty_input = True
+    if len(username) > 10 or len(password) > 10:
+        exceed_limit = True
+    result = [exceed_limit, empty_input]
+    return result
+
 # Homepage route
 @app.route('/')
 def homepage():
@@ -126,8 +137,7 @@ def algorithm(algorithm_set):
 
     # Fetch ratings from the database
     ratings = execute_query(
-        'SELECT algorithm_id, ROUND(AVG(rating), 1) AS average_rating, '
-        'COUNT(rating) AS num_ratings '
+        'SELECT algorithm_id, ROUND(AVG(rating), 1) AS average_rating '
         'FROM ratings '
         'GROUP BY algorithm_id',
         fetch_all=True
@@ -158,32 +168,37 @@ def register():
     """
     username_exist = False  # Flag for checking if username exist in the database
     registered = False  # Flag for checking if user registered successfully
-
+    error_handling = [False, False]
     if request.method == 'POST':
         # Form submission for register form
         username = request.form.get('username')
         password = request.form.get('password')
 
-        # Check if the username already exists in the database
-        check_username = execute_query(
-            'SELECT * FROM users WHERE username=?',
-            (username,), fetch_one=True
-        )
-        if check_username is None:
-            # Insert the new user account into the database
-            execute_query(
-                'INSERT INTO users (username, password) VALUES (?, ?)',
-                (username, password), commit=True
+        error_handling = check_error(username, password)
+
+        if not error_handling[0] and not error_handling[1]:
+            # Check if the username already exists in the database
+            check_username = execute_query(
+                'SELECT * FROM users WHERE username=?',
+                (username,), fetch_one=True
             )
-            registered = True
-        else:
-            # Tell the user to use a different username
-            username_exist = True
+            if check_username is None:
+                # Insert the new user account into the database
+                execute_query(
+                    'INSERT INTO users (username, password) VALUES (?, ?)',
+                    (username, password), commit=True
+                )
+                registered = True
+            else:
+                # Tell the user to use a different username
+                username_exist = True
 
     return render_template(
         'register.html',
         username_exist=username_exist,
-        registered=registered
+        registered=registered,
+        exceed_limit=error_handling[0],
+        empty_input=error_handling[1]
     )
 
 
@@ -200,36 +215,42 @@ def login():
     """
     wrong_username = False  # Flag for checking if user's username is correct
     wrong_password = False  # Flag for checking if user's password is correct
+    error_handling = [False, False]
 
     if request.method == 'POST':
         # Form submission for login
         username = request.form.get('username')
         password = request.form.get('password')
 
-        # Check if user account exists
-        check_user = execute_query(
-            'SELECT COUNT(*) AS user_count FROM users WHERE username = ?',
-            (username,), fetch_one=True
-        )
-        if check_user[0] == 1:
-            # Check if the password is correct
-            check_password = execute_query(
-                'SELECT * FROM users WHERE username = ? AND password = ?',
-                (username, password,), fetch_one=True
+        error_handling = check_error(username, password)
+        
+        if not error_handling[0] and not error_handling[1]:
+            # Check if user account exists
+            check_user = execute_query(
+                'SELECT * FROM users WHERE username = ?',
+                (username,), fetch_one=True
             )
-            if check_password is None:
-                wrong_password = True
+            if check_user:
+                # Check if the password is correct
+                check_password = execute_query(
+                    'SELECT * FROM users WHERE username = ? AND password = ?',
+                    (username, password,), fetch_one=True
+                )
+                if check_password is None:
+                    wrong_password = True
+                else:
+                    # Set up session variables
+                    session['username'] = username
+                    session['user_id'] = check_password[0]
             else:
-                # Set up session variables
-                session['username'] = username
-                session['user_id'] = check_password[0]
-        else:
-            wrong_username = True
+                wrong_username = True
 
     return render_template(
         'login.html',
         wrong_username=wrong_username,
-        wrong_password=wrong_password
+        wrong_password=wrong_password,
+        exceed_limit=error_handling[0],
+        empty_input=error_handling[1]
     )
 
 
@@ -317,7 +338,7 @@ def timer():
 @app.route('/notation')
 def notation():
     """
-    Render the notation page.
+    Render the notation page
 
     Returns:
         Render notation template
@@ -329,7 +350,7 @@ def notation():
 @app.errorhandler(404)
 def page_not_found(error):
     """
-    Handle 404 errors and render the 404 error page.
+    Handle 404 errors and render the 404 error page
 
     Returns:
         Render 404 template
