@@ -26,29 +26,42 @@ def execute_query(query, parameters=(), fetch_one=False, fetch_all=False, commit
     conn = sqlite3.connect('cube.db')
     cur = conn.cursor()
     # Execute query with parameters
-    cur.execute(query, parameters) 
+    cur.execute(query, parameters)
     # Process results from the query
     if commit:
         conn.commit()
         result = None
     elif fetch_one:
-        result = cur.fetchone()  
+        result = cur.fetchone()
     elif fetch_all:
-        result = cur.fetchall()  
+        result = cur.fetchall()
     conn.close()
     return result
 
 
-# Fucntion to check errors from register and login form submissions
-def check_error(username, password):
-    exceed_limit = False
+def check_account():
+    """
+    Check user account in the dtabase
+
+    Returns:
+        check_account (tuple or None): Result from querying the database for the account
+        username (str): The username from the form.
+        password (str): The password from the form.
+    """
+    username = request.form.get('username')
+    password = request.form.get('password')
     empty_input = False
-    if username == '' or password == '':
+    exceed_limit = False
+    check_account = execute_query(
+            'SELECT * FROM users WHERE username=?',
+            (username,), fetch_one=True
+        )
+    if username == '' or password == '' or ' ' in username or ' ' in password:
         empty_input = True
-    if len(username) > 10 or len(password) > 10:
+    elif len(username) > 10 or len(password) > 10:
         exceed_limit = True
-    result = [exceed_limit, empty_input]
-    return result
+    return check_account, username, password, empty_input, exceed_limit
+
 
 # Homepage route
 @app.route('/')
@@ -165,40 +178,38 @@ def register():
         Render register template
         username_exist (bool): Flag indicating if the username already exists
         registered (bool): Flag indicating if registration was successful
+        empty_input (bool): Flag indicating if inputs from forms are emtpy or have space
+        exceed_limit (bool): Flag indicatin if inputs are longer than 10 characters
     """
     username_exist = False  # Flag for checking if username exist in the database
     registered = False  # Flag for checking if user registered successfully
-    error_handling = [False, False]
+    empty_input = False  # Set default value for emtpy input to False
+    exceed_limit = False  # Set default value for exceed limit to False
+
     if request.method == 'POST':
         # Form submission for register form
-        username = request.form.get('username')
-        password = request.form.get('password')
-
-        error_handling = check_error(username, password)
-
-        if not error_handling[0] and not error_handling[1]:
-            # Check if the username already exists in the database
-            check_username = execute_query(
-                'SELECT * FROM users WHERE username=?',
-                (username,), fetch_one=True
-            )
-            if check_username is None:
-                # Insert the new user account into the database
-                execute_query(
-                    'INSERT INTO users (username, password) VALUES (?, ?)',
-                    (username, password), commit=True
-                )
-                registered = True
-            else:
-                # Tell the user to use a different username
-                username_exist = True
+        if 'username' in request.form and 'password' in request.form:
+            # Check error for inputs
+            check_username, username, password, empty_input, exceed_limit = check_account()
+            # Check if inputs are valid
+            if not empty_input and not exceed_limit:
+                if check_username is None:
+                    # Insert the new user account into the database
+                    execute_query(
+                        'INSERT INTO users (username, password) VALUES (?, ?)',
+                        (username, password), commit=True
+                    )
+                    registered = True
+                else:
+                    # If username exists or any errors
+                    username_exist = True
 
     return render_template(
         'register.html',
         username_exist=username_exist,
         registered=registered,
-        exceed_limit=error_handling[0],
-        empty_input=error_handling[1]
+        exceed_limit=exceed_limit,
+        empty_input=empty_input
     )
 
 
@@ -212,45 +223,39 @@ def login():
         Render login template
         wrong_username (bool): Flag indicating if the username is incorrect
         wrong_password (bool): Flag indicating if the password is incorrect
+        empty_input (bool): Flag indicating if inputs from forms are emtpy or have space
+        exceed_limit (bool): Flag indicatin if inputs are longer than 10 characters
     """
     wrong_username = False  # Flag for checking if user's username is correct
     wrong_password = False  # Flag for checking if user's password is correct
-    error_handling = [False, False]
-
+    empty_input = False  # Set default value for emtpy input to False
+    exceed_limit = False  # Set default value for exceed limit to False
     if request.method == 'POST':
-        # Form submission for login
-        username = request.form.get('username')
-        password = request.form.get('password')
-
-        error_handling = check_error(username, password)
-        
-        if not error_handling[0] and not error_handling[1]:
-            # Check if user account exists
-            check_user = execute_query(
-                'SELECT * FROM users WHERE username = ?',
-                (username,), fetch_one=True
-            )
-            if check_user:
-                # Check if the password is correct
-                check_password = execute_query(
-                    'SELECT * FROM users WHERE username = ? AND password = ?',
-                    (username, password,), fetch_one=True
-                )
-                if check_password is None:
-                    wrong_password = True
+        # For submission for login form
+        if 'username' in request.form and 'password' in request.form:
+            # Check errors for input
+            check_username, username, password, empty_input, exceed_limit = check_account()
+            if not empty_input and not exceed_limit:
+                if check_username is None:
+                    wrong_username = True
                 else:
-                    # Set up session variables
-                    session['username'] = username
-                    session['user_id'] = check_password[0]
-            else:
-                wrong_username = True
+                    check_password = execute_query(
+                        'SELECT * FROM users WHERE username = ? AND password = ?',
+                        (username, password,), fetch_one=True
+                    )
+                    if check_password is None:
+                        wrong_password = True
+                    else:
+                        # Set up session variables
+                        session['username'] = username
+                        session['user_id'] = check_password[0]
 
     return render_template(
         'login.html',
         wrong_username=wrong_username,
         wrong_password=wrong_password,
-        exceed_limit=error_handling[0],
-        empty_input=error_handling[1]
+        exceed_limit=exceed_limit,
+        empty_input=empty_input
     )
 
 

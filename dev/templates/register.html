@@ -25,9 +25,9 @@
         {% if username_exist %}
             <p class="error-message">The username is already taken!</p>
         {% elif exceed_limit %}
-            <p class="error-message">Username and password length must be less or equal to 10</p>
+            <p class="error-message">Username and password length must be less or equal to 10 characters</p>
         {% elif empty_input %}
-            <p class="error-message">Username or password can't be empty</p>
+            <p class="error-message">Username or password can't be empty or have space</p>
         {% endif %}
         <a href="/login" class="link">Return to login</a>
     </div>
