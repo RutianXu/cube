@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, session
+from flask import Flask, render_template, request, session, jsonify
 import sqlite3
 from base64 import b64encode
 from secrets import token_hex
@@ -41,26 +41,44 @@ def execute_query(query, parameters=(), fetch_one=False, fetch_all=False, commit
 
 def check_account():
     """
-    Check user account in the dtabase
+    Check user account in the database
 
     Returns:
-        check_account (tuple or None): Result from querying the database for the account
-        username (str): The username from the form.
-        password (str): The password from the form.
+        check_account (dict): Result from querying the database for the account
+        username (str): The username from the form
+        password (str): The password from the form
+        errors (dict): A dictionary of the possible errors of inputs
     """
-    username = request.form.get('username')
-    password = request.form.get('password')
-    empty_input = False
-    exceed_limit = False
-    check_account = execute_query(
-            'SELECT * FROM users WHERE username=?',
-            (username,), fetch_one=True
-        )
-    if username == '' or password == '' or ' ' in username or ' ' in password:
-        empty_input = True
-    elif len(username) > 10 or len(password) > 10:
-        exceed_limit = True
-    return check_account, username, password, empty_input, exceed_limit
+    # Default values for variables
+    errors = {
+        'empty_input': False,
+        'exceed_limit': False,
+    }
+    check_username = {
+        'query_result': None,
+        'submit_form': False
+    }
+    username = None
+    password = None
+    if request.method == 'POST':
+        if 'username' in request.form and 'password' in request.form:
+            # Get username and password from form
+            username = request.form.get('username')
+            password = request.form.get('password')
+            # Check if inputs are empty or contain space
+            if username == '' or password == '' or ' ' in username or ' ' in password:
+                errors['empty_input'] = True
+            # Check if inputs are longer than 10 characters
+            elif len(username) > 10 or len(password) > 10:
+                errors['exceed_limit'] = True
+            # Check if username exists in database
+            if not errors['empty_input'] and not errors['exceed_limit']:
+                check_username['query_result'] = execute_query(
+                    'SELECT * FROM users WHERE username=?',
+                    (username,), fetch_one=True
+                )
+                check_username['submit_form'] = True
+    return check_username, username, password, errors
 
 
 # Homepage route
@@ -89,7 +107,10 @@ def algorithm(algorithm_set):
         algorithm_set (str): The name of the algorithms set to display
         sorting_way (str): Sorting method of the algoirthms
     """
-    sorting_way = 'id'  # Default sorting method for algoirthms 
+    sorting_way = 'id'  # Default sorting method for algoirthms
+    valid_rating = True
+    is_space = False
+    in_range = True
     if request.method == 'POST':
         # Form submission for how algoirthms are sorted
         if 'sorting-select' in request.form:
@@ -101,23 +122,46 @@ def algorithm(algorithm_set):
             user_id = session.get('user_id')
             rating = request.form.get('rating')
 
-            # Check if a rating already exists in the database
-            check_rating = execute_query(
-                'SELECT * FROM ratings WHERE algorithm_id = ? AND user_id = ?',
-                (algorithm_id, user_id,), fetch_one=True
-            )
-            if check_rating is None:  # Check if user rated the same algorithm 
-                # Insert rating into the database if the user have not rated before
-                execute_query(
-                    'INSERT INTO ratings (algorithm_id, user_id, rating) VALUES (?, ?, ?)',
-                    (algorithm_id, user_id, rating,), commit=True
-                )
+            try:
+                # Convert rating to an integer
+                rating = int(rating)
+                # Check if rating is within range
+                if 0 > int(rating) or int(rating) > 5:
+                    in_range = False
+            except ValueError:
+                in_range = False
+            # Check if rating is not empty and does not contain spaces
+            if str(rating) == '' and ' ' in str(rating):
+                is_space = True
+
+            if not in_range or is_space:
+                valid_rating = False
+                # Check if the request is an AJAX request
+                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                    response = {
+                        'valid_rating': valid_rating,
+                        'in_range': in_range,
+                        'is_space': is_space
+                    }
+                    return jsonify(response)
             else:
-                # Update rating if the user have rated before
-                execute_query(
-                    'UPDATE ratings SET rating = ? WHERE user_id = ? AND algorithm_id = ?',
-                    (rating, user_id, algorithm_id,), commit=True
+                # Check if a rating already exists in the database
+                check_rating = execute_query(
+                    'SELECT * FROM ratings WHERE algorithm_id = ? AND user_id = ?',
+                    (algorithm_id, user_id,), fetch_one=True
                 )
+                if check_rating is None:
+                    # Insert rating into the database if the user has not rated before
+                    execute_query(
+                        'INSERT INTO ratings (algorithm_id, user_id, rating) VALUES (?, ?, ?)',
+                        (algorithm_id, user_id, rating,), commit=True
+                    )
+                else:
+                    # Update rating if the user has rated before
+                    execute_query(
+                        'UPDATE ratings SET rating = ? WHERE user_id = ? AND algorithm_id = ?',
+                        (rating, user_id, algorithm_id,), commit=True
+                    )
 
     # Fetch the algorithms from the database
     if sorting_way == 'name':
@@ -183,33 +227,27 @@ def register():
     """
     username_exist = False  # Flag for checking if username exist in the database
     registered = False  # Flag for checking if user registered successfully
-    empty_input = False  # Set default value for emtpy input to False
-    exceed_limit = False  # Set default value for exceed limit to False
 
-    if request.method == 'POST':
-        # Form submission for register form
-        if 'username' in request.form and 'password' in request.form:
-            # Check error for inputs
-            check_username, username, password, empty_input, exceed_limit = check_account()
-            # Check if inputs are valid
-            if not empty_input and not exceed_limit:
-                if check_username is None:
-                    # Insert the new user account into the database
-                    execute_query(
-                        'INSERT INTO users (username, password) VALUES (?, ?)',
-                        (username, password), commit=True
-                    )
-                    registered = True
-                else:
-                    # If username exists or any errors
-                    username_exist = True
-
+    # Check error for inputs from register form submission
+    check_username, username, password, errors = check_account()
+    # Check if inputs are valid
+    if check_username['submit_form']:
+        if check_username['query_result'] is None:
+            # Insert the new user account into the database
+            execute_query(
+                'INSERT INTO users (username, password) VALUES (?, ?)',
+                (username, password), commit=True
+            )
+            registered = True
+        else:
+            # If username exists or any errors
+            username_exist = True
     return render_template(
         'register.html',
         username_exist=username_exist,
         registered=registered,
-        exceed_limit=exceed_limit,
-        empty_input=empty_input
+        exceed_limit=errors['exceed_limit'],
+        empty_input=errors['empty_input'],
     )
 
 
@@ -228,34 +266,33 @@ def login():
     """
     wrong_username = False  # Flag for checking if user's username is correct
     wrong_password = False  # Flag for checking if user's password is correct
-    empty_input = False  # Set default value for emtpy input to False
-    exceed_limit = False  # Set default value for exceed limit to False
-    if request.method == 'POST':
-        # For submission for login form
-        if 'username' in request.form and 'password' in request.form:
-            # Check errors for input
-            check_username, username, password, empty_input, exceed_limit = check_account()
-            if not empty_input and not exceed_limit:
-                if check_username is None:
-                    wrong_username = True
-                else:
-                    check_password = execute_query(
-                        'SELECT * FROM users WHERE username = ? AND password = ?',
-                        (username, password,), fetch_one=True
-                    )
-                    if check_password is None:
-                        wrong_password = True
-                    else:
-                        # Set up session variables
-                        session['username'] = username
-                        session['user_id'] = check_password[0]
+
+    # Check errors for input
+    check_username, username, password, errors = check_account()
+    # Check if inputs are valid
+    if check_username['submit_form']:
+        if check_username['query_result'] is None:
+            # Set wrong username flag to True
+            wrong_username = True
+        else:
+            check_password = execute_query(
+                'SELECT * FROM users WHERE username = ? AND password = ?',
+                (username, password,), fetch_one=True
+            )
+            if check_password is None:
+                # Set wrong password flag to True
+                wrong_password = True
+            else:
+                # Set up session variables
+                session['username'] = username
+                session['user_id'] = check_password[0]
 
     return render_template(
         'login.html',
         wrong_username=wrong_username,
         wrong_password=wrong_password,
-        exceed_limit=exceed_limit,
-        empty_input=empty_input
+        exceed_limit=errors['exceed_limit'],
+        empty_input=errors['empty_input']
     )
 
 
@@ -329,7 +366,7 @@ def timer():
                 )
         # Fetch saved times from the database
         times = execute_query(
-            'SELECT time FROM timer WHERE user_id=?',
+            'SELECT time FROM timer WHERE user_id=? ORDER BY id DESC',
             (user_id,), fetch_all=True
         )
 

@@ -4,7 +4,7 @@
     <!-- Page heading based on the algorithm set -->
     <h1 class="heading">{{ algorithm_set | upper }}</h1>
     
-    <div class="container" class="description">
+    <div class="container description">
         <!-- Description based on the selected algorithm set -->
         {% if algorithm_set == 'pll' %}
             <p>
@@ -71,20 +71,22 @@
 
                         <!-- Rating form (visible if user is logged in) -->
                         {% if 'username' in session %}
-                        <div class="rating">
-                            <form id="rating-form-{{ algs[0] }}" onsubmit="submitRating(event, '{{ algs[0] }}')">
-                                <div class="form-group">
-                                    <label for="rating">Rate this algorithm (from 0 to 5):</label>
-                                    <input type="number" name="rating" min="0" max="5" step="1" required>
-                                </div>
-                                <button type="submit">Submit Rating</button>
-                            </form>
-                        </div>
+                            <div class="rating">
+                                <form id="rating-form-{{ algs[0] }}" onsubmit="submitRating(event, '{{ algs[0] }}')">
+                                    <div class="form-group">
+                                        <label for="rating">Rate this algorithm (from 0 to 5):</label>
+                                        <input name="rating">
+                                    </div>
+                                    <button type="submit">Submit Rating</button>
+                                </form>
+                            </div>
+                            <!-- Error messages -->
+                            <p class="error-message" id="rating-error"></p>
                         {% else %}
-                        <div class="rating-text">
-                            <!-- Prompt user to log in to rate algorithms -->
-                            <a href="/login">Login to rate algorithms</a>
-                        </div>
+                            <div class="rating-text">
+                                <!-- Prompt user to log in to rate algorithms -->
+                                <a href="/login">Login to rate algorithms</a>
+                            </div>
                         {% endif %}
 
                         <!-- Display the average rating for the algorithm -->
@@ -108,6 +110,7 @@
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "/algorithms/{{ algorithm_set }}", true);
         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest"); // Set the custom header
 
         // Get data from rating form
         var form = document.querySelector(`#rating-form-${algorithmId}`);
@@ -117,13 +120,34 @@
         // Notify user to reload page to see new average rating
         xhr.onreadystatechange = function() {
             if (xhr.readyState == 4 && xhr.status == 200) {
-                document.getElementById("rating-display-" + algorithmId).innerHTML = "Rating Submitted! Reload to see new average rating.";
+                // Parse JSON response
+                var response = JSON.parse(xhr.responseText);
+                if (response && typeof response === 'object') {
+                    // Extract variables from the JSON response
+                    var validRating = response.valid_rating;
+                    var inRange = response.in_range;
+                    var isSpace = response.is_space;
+                    if (validRating) {
+                        document.getElementById("rating-display-" + algorithmId).textContent = "Rating Submitted! Reload to see new average rating.";
+                        document.getElementById('rating-error').textContent = "";
+                        form.remove();
+                    } 
+                    else {
+                        if (isSpace) {
+                            document.getElementById('rating-error').textContent = "Input must not contain space or be empty";
+                        }
+                        else if (!inRange) {
+                            document.getElementById('rating-error').textContent = "Input must be an integer from 0 to 5";
+                        }
+                    }
+                }
             }
+
         };
         
         // Send data to route and remove the form
         xhr.send(data);
-        form.remove();
+
     }
 </script>
 {% endblock %}
