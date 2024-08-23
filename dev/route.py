@@ -136,14 +136,6 @@ def algorithm(algorithm_set):
 
             if not in_range or is_space:
                 valid_rating = False
-                # Check if the request is an AJAX request
-                if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-                    response = {
-                        'valid_rating': valid_rating,
-                        'in_range': in_range,
-                        'is_space': is_space
-                    }
-                    return jsonify(response)
             else:
                 # Check if a rating already exists in the database
                 check_rating = execute_query(
@@ -202,14 +194,24 @@ def algorithm(algorithm_set):
     # Store the query results in a dictionary
     ratings = {item[0]: item[1] for item in ratings}
 
-    return render_template(
-        'algorithms.html',
-        algorithms=algorithms,
-        images=images,
-        ratings=ratings,
-        algorithm_set=algorithm_set,
-        sorting_way=sorting_way
-    )
+    # Check if the request is an AJAX request
+    if request.headers.get('rating') == 'XMLHttpRequest':
+        response = {
+            'valid_rating': valid_rating,
+            'in_range': in_range,
+            'is_space': is_space
+        }
+        return jsonify(response)
+
+    else:
+        return render_template(
+            'algorithms.html',
+            algorithms=algorithms,
+            images=images,
+            ratings=ratings,
+            algorithm_set=algorithm_set,
+            sorting_way=sorting_way
+        )
 
 
 # Registration route
@@ -369,10 +371,10 @@ def timer():
             'SELECT time FROM timer WHERE user_id=? ORDER BY id DESC',
             (user_id,), fetch_all=True
         )
-
+    if request.headers.get('time') == 'XMLHttpRequest':
+        return jsonify(times)
     return render_template(
         'timer.html',
-        times=times,
     )
 
 

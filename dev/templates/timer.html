@@ -13,11 +13,7 @@
             <!-- List to display saved times -->
             <h2 id="time-list-heading">Times</h2>
             <button onclick="clearTimes()">Clear Times</button>
-            <ul id="time-list">
-                {% for time in times %}
-                    <li>{{ time[0] }} s</li>
-                {% endfor %}
-            </ul>
+            <ul id="time-list"></ul>
         </div>
         
         <script>
@@ -25,7 +21,8 @@
             let totalMilliseconds = 0; // Total milliseconds elapsed
             let isRunning = false; // FGag to track if timer is running
             let reset = false; // Flag to track if time needs to reset
-
+            timeDisplay();
+            
             // Function to control timer start and stop
             function controlTimer() {
                 if (!isRunning) {
@@ -77,11 +74,8 @@
                 xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); // Set request header
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState == 4 && xhr.status == 200) { // Check if request is complete and successful
-                        // Create new list item for the saved time
-                        const li = document.createElement("li");
-                        li.textContent = time.toFixed(2) + " s";
-                        const timeList = document.getElementById("time-list");
-                        timeList.insertBefore(li, timeList.firstChild);
+                        timeDisplay();
+                        
                     }
                 };
                 xhr.send("time=" + time); // Send post request 
@@ -94,14 +88,35 @@
                 xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); // Set request header
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState == 4 && xhr.status == 200) { // Check if request is complete and successful
-                        // Remove all child nodes (list items) from the time list
-                        const timeList = document.getElementById("time-list");
-                        while (timeList.firstChild) {
-                            timeList.removeChild(timeList.firstChild);
+                        timeDisplay();
                         }
                     }
-                };
                 xhr.send("clear=true"); // Send POST request with clear flag
+            }
+
+            function timeDisplay() {
+                const xhr = new XMLHttpRequest(); // Create new XMLHttpRequest object
+                xhr.open("POST", "/timer", true); // Set up POST request to /timer route
+                xhr.setRequestHeader("time", "XMLHttpRequest"); 
+
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        // Parse JSON response
+                        var times = JSON.parse(xhr.responseText);
+
+                        
+                        var listElement = document.getElementById('time-list');
+                        listElement.innerHTML = ''; // Clear existing content              
+
+                        times.forEach(function(item) {
+                            var listItem = document.createElement('li');
+                            listItem.textContent = item;
+                            listElement.appendChild(listItem);
+                        });
+                    }
+                };
+
+                xhr.send(); // Send the request
             }
 
             // Add event listner to prevent spacebar scrolling
@@ -122,6 +137,7 @@
                     }
                 }
             });
+           
         </script>
 {% else %}
     <div class="container">
