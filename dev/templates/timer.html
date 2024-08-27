@@ -3,17 +3,18 @@
 {% if 'username' in session %}
     <h1 class="heading">Timer</h1>
         <!-- Timer display -->
-        <div class="container">
-            <p id="timer">0.00 s</p>
-        
-            <!-- Control button for timer -->
-            <button id="controlButton" onclick="controlTimer()">Start</button>
-            <p>Hint:Press space bar to control the timer</p>
-
-            <!-- List to display saved times -->
-            <h2 id="time-list-heading">Times</h2>
-            <button onclick="clearTimes()">Clear Times</button>
-            <ul id="time-list"></ul>
+        <div id="timer-container">
+            <div class="time-container">
+                <p id="timer">0.00 s</p>
+                <button id="controlButton" onclick="controlTimer()">Start</button>
+                <p>Hint: Press space bar to control the timer</p>
+            </div>
+            
+            <div class="time-container">
+                <h2 id="heading">Times</h2>
+                <button onclick="clearTimes()">Clear Times</button>
+                <ol id="time-list"></ol>
+            </div>
         </div>
         
         <script>
@@ -107,10 +108,14 @@
                         
                         var listElement = document.getElementById('time-list');
                         listElement.innerHTML = ''; // Clear existing content              
-
-                        times.forEach(function(item) {
+                        var startNumber = times.length;
+                        times.forEach(function(item, index) {
                             var listItem = document.createElement('li');
                             listItem.textContent = item;
+
+                            // Manually set the list item's number
+                            listItem.setAttribute('value', startNumber - index);
+
                             listElement.appendChild(listItem);
                         });
                     }

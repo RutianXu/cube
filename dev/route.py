@@ -41,7 +41,7 @@ def execute_query(query, parameters=(), fetch_one=False, fetch_all=False, commit
 
 def check_account():
     """
-    Check user account in the database
+    Check user account in the database and validate inputs
 
     Returns:
         check_account (dict): Result from querying the database for the account
@@ -71,7 +71,7 @@ def check_account():
             # Check if inputs are longer than 10 characters
             elif len(username) > 10 or len(password) > 10:
                 errors['exceed_limit'] = True
-            # Check if username exists in database
+            # Get username from the database if inputs are valid
             if not errors['empty_input'] and not errors['exceed_limit']:
                 check_username['query_result'] = execute_query(
                     'SELECT * FROM users WHERE username=?',
@@ -94,23 +94,30 @@ def homepage():
 @app.route('/algorithms/<algorithm_set>', methods=['GET', 'POST'])
 def algorithm(algorithm_set):
     """
-    Render the algorithms page and handle form submissions for sorting and rating
+    Render the algorithms page and handle form submissions for sorting and rating.
 
     Args:
-        algorithm_set (str): The set of algorithms to display
+        algorithm_set (str): The set of algorithms to display.
 
     Returns:
-        Render the algorithms template
-        algorithms (list): List of algorithms to display
-        images (list): List of images associated with the algorithms
-        ratings (dict): Dictionary of average ratings and number of ratings for each algorithm
-        algorithm_set (str): The name of the algorithms set to display
-        sorting_way (str): Sorting method of the algoirthms
+        Render the algorithms template:
+        - algorithms (list): List of algorithms to display.
+        - images (list): List of images associated with the algorithms.
+        - ratings (dict): Dictionary of average ratings and number of ratings for each algorithm.
+        - algorithm_set (str): The name of the algorithms set to display.
+        - sorting_way (str): Sorting method of the algorithms.
+
+        JSON response:
+        - response (dict):
+            - valid_rating (bool): Whether the rating submitted is valid.
+            - is_space (bool): Whether the rating contains space or empty.
+            - in_range (bool): Whether the rating is within the allowed range (0-5).
+            - ratings (dict): Updated average ratings for algorithms.
     """
     sorting_way = 'id'  # Default sorting method for algoirthms
-    valid_rating = True
-    is_space = False
-    in_range = True
+    valid_rating = True  # Flag for checking if the rating is valid
+    is_space = False  # Flag for checking if the inputs has space or empty
+    in_range = True  # Flag for chekcing if the inputs are within the range(0-5)
     if request.method == 'POST':
         # Form submission for how algoirthms are sorted
         if 'sorting-select' in request.form:
@@ -122,6 +129,9 @@ def algorithm(algorithm_set):
             user_id = session.get('user_id')
             rating = request.form.get('rating')
 
+            # Check if rating is not empty and does not contain spaces
+            if rating == '' or ' ' in rating:
+                is_space = True
             try:
                 # Convert rating to an integer
                 rating = int(rating)
@@ -130,10 +140,7 @@ def algorithm(algorithm_set):
                     in_range = False
             except ValueError:
                 in_range = False
-            # Check if rating is not empty and does not contain spaces
-            if str(rating) == '' and ' ' in str(rating):
-                is_space = True
-
+            # Check if rating is valid
             if not in_range or is_space:
                 valid_rating = False
             else:
@@ -173,12 +180,12 @@ def algorithm(algorithm_set):
     if algorithms is None:
         return render_template('404.html')
 
-    # Process algorithms' images for display in the website
+    # Process algorithms' images to display in the website
     algorithms = [list(item) for item in algorithms]  # store all algorithms in a list
     images = []
     for algorithm in algorithms:
         image_blob = algorithm[-1]
-        # Change image value from blob to a base64 string
+        # Convert image value from blob to a base64 string
         if image_blob:
             encoded_image = b64encode(image_blob).decode('utf-8')
             img = [algorithm[1], encoded_image]
@@ -198,20 +205,20 @@ def algorithm(algorithm_set):
     if request.headers.get('rating') == 'XMLHttpRequest':
         response = {
             'valid_rating': valid_rating,
+            'is_space': is_space,
             'in_range': in_range,
-            'is_space': is_space
+            'ratings': ratings
         }
         return jsonify(response)
 
-    else:
-        return render_template(
-            'algorithms.html',
-            algorithms=algorithms,
-            images=images,
-            ratings=ratings,
-            algorithm_set=algorithm_set,
-            sorting_way=sorting_way
-        )
+    return render_template(
+        'algorithms.html',
+        algorithms=algorithms,
+        images=images,
+        ratings=ratings,
+        algorithm_set=algorithm_set,
+        sorting_way=sorting_way
+    )
 
 
 # Registration route
@@ -221,11 +228,11 @@ def register():
     Handle user registration and render the registration page
 
     Returns:
-        Render register template
-        username_exist (bool): Flag indicating if the username already exists
-        registered (bool): Flag indicating if registration was successful
-        empty_input (bool): Flag indicating if inputs from forms are emtpy or have space
-        exceed_limit (bool): Flag indicatin if inputs are longer than 10 characters
+        Render the register template:
+        - username_exist (bool): Flag indicating if the username already exists.
+        - registered (bool): Flag indicating if registration was successful.
+        - empty_input (bool): Flag indicating if inputs from forms are emtpy or have space.
+        - exceed_limit (bool): Flag indicatin if inputs are longer than 10 characters.
     """
     username_exist = False  # Flag for checking if username exist in the database
     registered = False  # Flag for checking if user registered successfully
@@ -234,6 +241,7 @@ def register():
     check_username, username, password, errors = check_account()
     # Check if inputs are valid
     if check_username['submit_form']:
+        # Check if username exists
         if check_username['query_result'] is None:
             # Insert the new user account into the database
             execute_query(
@@ -242,7 +250,6 @@ def register():
             )
             registered = True
         else:
-            # If username exists or any errors
             username_exist = True
     return render_template(
         'register.html',
@@ -260,29 +267,30 @@ def login():
     Handle user login and render the login page
 
     Returns:
-        Render login template
-        wrong_username (bool): Flag indicating if the username is incorrect
-        wrong_password (bool): Flag indicating if the password is incorrect
-        empty_input (bool): Flag indicating if inputs from forms are emtpy or have space
-        exceed_limit (bool): Flag indicatin if inputs are longer than 10 characters
+        Render the login template:
+        - wrong_username (bool): Flag indicating if the username is incorrect.
+        - wrong_password (bool): Flag indicating if the password is incorrect.
+        - empty_input (bool): Flag indicating if inputs from forms are emtpy or have space.
+        - exceed_limit (bool): Flag indicatin if inputs are longer than 10 characters.
     """
     wrong_username = False  # Flag for checking if user's username is correct
     wrong_password = False  # Flag for checking if user's password is correct
 
-    # Check errors for input
+    # Check errors for input from login form
     check_username, username, password, errors = check_account()
     # Check if inputs are valid
     if check_username['submit_form']:
+        # Check if username exists in database
         if check_username['query_result'] is None:
             # Set wrong username flag to True
             wrong_username = True
         else:
+            # Check if password is correct
             check_password = execute_query(
                 'SELECT * FROM users WHERE username = ? AND password = ?',
                 (username, password,), fetch_one=True
             )
             if check_password is None:
-                # Set wrong password flag to True
                 wrong_password = True
             else:
                 # Set up session variables
@@ -305,10 +313,10 @@ def logout():
     Handle user logout and account deletion, and render the logout page.
 
     Returns:
-        Render logout template
-        delete_account (bool): Flag indicating if the account has been deleted.
+        Render the logout template:
+        - delete_account (bool): Flag indicating if the account has been deleted.
     """
-    delete_account = False
+    delete_account = False # Flag for checking if account is delected
     if request.method == 'POST':
         if 'delete' in request.form:
             # Form submission for delelte account and delete account in the database
@@ -344,8 +352,11 @@ def timer():
     Render the timer page and handle form submissions for saving and clearing times
 
     Returns:
-        Render timer template
-        times (list or None): List of saved times or None if the user is not logged in.
+        Render the timer template:
+        - times (list or None): List of saved times or None if the user is not logged in.
+
+        JSON response:
+            - times (list): List of new saved times to update in the website.
     """
     # Check if user login
     if 'user_id' not in session:
@@ -371,8 +382,10 @@ def timer():
             'SELECT time FROM timer WHERE user_id=? ORDER BY id DESC',
             (user_id,), fetch_all=True
         )
+    # Check if the request is an AJAX request
     if request.headers.get('time') == 'XMLHttpRequest':
         return jsonify(times)
+
     return render_template(
         'timer.html',
     )
@@ -382,10 +395,7 @@ def timer():
 @app.route('/notation')
 def notation():
     """
-    Render the notation page
-
-    Returns:
-        Render notation template
+    Render the notation page.
     """
     return render_template('notation.html')
 
@@ -394,10 +404,7 @@ def notation():
 @app.errorhandler(404)
 def page_not_found(error):
     """
-    Handle 404 errors and render the 404 error page
-
-    Returns:
-        Render 404 template
+    Render the 404 error page.
     """
     return render_template('404.html')
 

@@ -81,7 +81,7 @@
                                 </form>
                             </div>
                             <!-- Error messages -->
-                            <p class="error-message" id="rating-error"></p>
+                            <p class="error-message" id="rating-error-{{ algs[0] }}"></p>
                         {% else %}
                             <div class="rating-text">
                                 <!-- Prompt user to log in to rate algorithms -->
@@ -110,7 +110,7 @@
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "/algorithms/{{ algorithm_set }}", true);
         xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xhr.setRequestHeader("X-Requested-With", "XMLHttpRequest"); // Set the custom header
+        xhr.setRequestHeader("rating", "XMLHttpRequest"); // Set the custom header
 
         // Get data from rating form
         var form = document.querySelector(`#rating-form-${algorithmId}`);
@@ -122,22 +122,23 @@
             if (xhr.readyState == 4 && xhr.status == 200) {
                 // Parse JSON response
                 var response = JSON.parse(xhr.responseText);
-                if (response && typeof response === 'object') {
+                if (response) {
                     // Extract variables from the JSON response
                     var validRating = response.valid_rating;
+                    var isSpace = response.is_space
                     var inRange = response.in_range;
-                    var isSpace = response.is_space;
+                    var ratings = response.ratings;
                     if (validRating) {
-                        document.getElementById("rating-display-" + algorithmId).textContent = "Rating Submitted! Reload to see new average rating.";
-                        document.getElementById('rating-error').textContent = "";
+                        document.getElementById("rating-display-" + algorithmId).textContent = "Average Rating:" + ratings[algorithmId];
+                        document.getElementById('rating-error-' + algorithmId).textContent = "Rating Submitted!";
                         form.remove();
                     } 
                     else {
                         if (isSpace) {
-                            document.getElementById('rating-error').textContent = "Input must not contain space or be empty";
+                            document.getElementById('rating-error-' + algorithmId).textContent = "Input must not contain space or be empty";
                         }
                         else if (!inRange) {
-                            document.getElementById('rating-error').textContent = "Input must be an integer from 0 to 5";
+                            document.getElementById('rating-error-' + algorithmId).textContent = "Input must be an integer from 0 to 5";
                         }
                     }
                 }
@@ -145,7 +146,7 @@
 
         };
         
-        // Send data to route and remove the form
+        // Send data to route
         xhr.send(data);
 
     }

@@ -46,11 +46,34 @@ body {
     margin: 20px 0; /* Margin above and below the heading */
 }
 
+/* Timer styles */
+
 /* Timer display styling with large font size */
 #timer {
     text-align: center; 
     font-size: 5em; 
     margin: 20px 0; /* Margin above and below the timer */
+}
+
+#timer-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    box-sizing: border-box; /* Ensure padding and margin are included in the width */
+}
+
+/* Style for the individual time containers */
+.time-container {
+    font-size: 1.2em;
+    display: flex; /* Use flexbox for internal layout */
+    flex-direction: column; /* Stack items vertically */
+    gap: 20px; /* Space between internal items */
+    text-align: center; 
+    background-color: white; 
+    padding: 20px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    flex: 1; /* Allow the container to grow and fill available space */
+    margin: 0 10px; /* Add horizontal margin to ensure spacing */
 }
 
 /* Footer Styles */
