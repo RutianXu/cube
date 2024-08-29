@@ -1,0 +1,392 @@
+/* Apply box-sizing globally */
+*,
+*::before,
+*::after {
+    box-sizing: border-box; /* Include padding and border in element's total width and height */
+}
+
+/* General Styles */
+
+/* Set the background colour and font for the entire page */
+body {
+    background-color: #F0F4EF; 
+    font-family: Arial, sans-serif; /* Font style for the entire page */
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Full viewport height */
+    margin: 0;
+}
+
+/* Container for centralised content with padding and box shadow */
+.container {
+    font-size: 1.2em;
+    display: grid; /* Enable grid layout */
+    gap: 20px; /* Space between grid items */
+    text-align: center; 
+    background-color: white; 
+    padding: 20px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    max-width: 600px; 
+    margin: 20px auto; /* Centre the container with automatic margins */
+    flex: 1; /* Allow the container to grow and fill available space */
+}
+
+/* Images inside the container */
+.container img {
+    display: block; /* Ensure the image is a block element */
+    max-width: 100%; 
+    height: auto; 
+    margin: 0 auto; /* Center the image horizontally */
+}
+
+/* Heading styling for large, centralised titles */
+.heading {
+    text-align: center; 
+    font-size: 3em; 
+    margin: 20px 0; /* Margin above and below the heading */
+}
+
+/* Scroll to Top Button Styles */
+#scrollToTop {
+    position: fixed; /* Fix the button to the viewport */
+    bottom: 20px; /* Distance from the bottom */
+    right: 20px; /* Distance from the right */
+    font-size: 1em; /* Size of the button text */
+    background-color: #ff4d4d; /* Background color of the button */
+    color: white; /* Text color */
+    border: none; /* Remove default border */
+    border-radius: 4px; /* Rounded corners */
+    padding: 10px 15px; /* Padding inside the button */
+    cursor: pointer; /* Change cursor to pointer on hover */
+    display: none; /* Hide the button initially */
+    z-index: 1000; /* Ensure the button stays above other content */
+}
+
+/* Hover effect for the button */
+#scrollToTop:hover {
+    background-color: #cc0000; /* Darker red on hover */
+}
+
+
+/* Timer styles */
+
+/* Timer display styling with large font size */
+#timer {
+    text-align: center; 
+    font-size: 5em; 
+    margin: 20px 0; /* Margin above and below the timer */
+}
+
+#timer-container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    box-sizing: border-box; /* Ensure padding and margin are included in the width */
+}
+
+/* Style for the individual time containers */
+.time-container {
+    font-size: 1.2em;
+    display: flex; /* Use flexbox for internal layout */
+    flex-direction: column; /* Stack items vertically */
+    gap: 20px; /* Space between internal items */
+    text-align: center; 
+    background-color: white; 
+    padding: 20px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
+    flex: 1; /* Allow the container to grow and fill available space */
+    margin: 0 10px; /* Add horizontal margin to ensure spacing */
+}
+
+/* Footer Styles */
+
+/* Styling for the footer with background colour, text colour, and padding */
+footer {
+    background-color: #0B1821; 
+    color: white; 
+    text-align: center; 
+    padding: 20px; /* Padding inside the footer */
+    font-size: 14px; 
+    width: 100%; 
+    margin-top: auto; /* Push the footer to the bottom */
+}
+
+/* Styling for footer links with colour and hover effects */
+footer a {
+    color: #B4CDE4; 
+    text-decoration: none; 
+    margin: 0 10px; /* Horizontal margin between links */
+}
+
+footer a:hover {
+    text-decoration: underline; 
+}
+
+/* Navbar Styles */
+
+/* Navbar container with background colour and font settings */
+nav {
+    overflow: hidden; /* Prevent overflow of navbar content */
+    background-color: #344966;
+    font-family: Arial;
+    top: 0; /* Aligns the navbar to the top of the page */
+    width: 100%; /* Ensures the navbar spans the full width of the page */
+    z-index: 1000; /* Ensures the navbar stays above other content */
+}
+
+
+/* Logo styling with background colour, dimensions, and alignment */
+.logo {
+    background-color: white;
+    border-radius: 3px;
+    height: 40px;
+    width: auto;
+    vertical-align: middle;
+    display: inline-block; /* Inline-block display for proper alignment */
+    margin-right: 20px; /* Margin to the right of the logo */
+}
+
+/* Navbar links with font size, colour, padding, and alignment */
+nav a {
+    float: left; /* Float links to the left */
+    font-size: 40px;
+    color: white;
+    text-align: center;
+    padding: 14px 20px;
+    border-radius: 10px;
+    text-decoration: none;
+    line-height: 40px; /* Line height to match font size */
+}
+
+/* Active link styling */
+nav a.active, nav .dropbtn.active {
+    background-color: #ff4d4d;
+}
+
+/* Dropdown container for additional navigation options */
+.dropdown {
+    float: left; /* Float dropdown container to the left */
+    overflow: hidden; /* Hide overflow of dropdown content */
+}
+
+/* Dropdown button styling with font size, colour, and padding */
+.dropdown .dropbtn {
+    font-size: 40px;
+    border: none; /* Remove border from dropdown button */
+    outline: none; /* Remove outline from dropdown button */
+    color: white;
+    padding: 14px 20px; /* Padding inside the dropdown button */
+    background-color: inherit; /* Inherit background colour from navbar */
+    margin: 0; /* Remove margin */
+    line-height: 40px; /* Line height to match font size */
+    font-family: inherit; /* Inherit font family from navbar */
+}
+
+/* Dropdown content styling, hidden by default */
+.dropdown-content {
+    display: none; /* Hide dropdown content initially */
+    position: absolute; /* Absolute positioning for dropdown content */
+    background-color: #f9f9f9;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2); /* Shadow effect for dropdown */
+    z-index: 1;
+}
+
+/* Links inside the dropdown with colour, padding, and alignment */
+.dropdown-content a {
+    float: none; /* No floating for dropdown links */
+    color: black;
+    padding: 12px 16px; /* Padding inside dropdown links */
+    text-decoration: none;
+    display: block; /* Block display for dropdown links */
+    text-align: left;
+}
+
+/* Hover effect for dropdown links */
+.dropdown-content a:hover {
+    background-color: #ddd;
+}
+
+/* Show the dropdown menu when hovering over the dropdown container */
+.dropdown:hover .dropdown-content {
+    display: block; /* Show dropdown content on hover */
+}
+
+/* Navbar and dropdown button hover effects */
+nav a:hover, .dropdown:hover .dropbtn {
+    background-color: red;
+}
+
+
+/* Image Container Styles */
+
+/* Container for images with flex layout, spacing, and padding */
+.image-container {
+    display: flex; /* Flexbox layout for images */
+    justify-content: center; /* Center-align images horizontally */
+    gap: 20px; /* Space between images */
+    padding: 20px; /* Padding inside the image container */
+    background-color: white; /* Change background to white */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Box shadow similar to the grid container */
+    margin: 20px auto; /* Center the container with automatic margins */
+    max-width: 600px; 
+    text-align: center; 
+}
+
+/* Style for individual image items with vertical alignment */
+.image-item {
+    display: flex; /* Flexbox layout for image items */
+    flex-direction: column; /* Stack items vertically */
+    align-items: center; /* Centre-align items horizontally */
+    text-align: center; 
+}
+
+/* Styling for images within the container */
+.image-container img {
+    background-color: #B4CDE4; 
+    width: 200px; 
+    height: auto; 
+    border: 2px solid #ccc; /* Light grey border */
+    border-radius: 8px; 
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition effects */
+    display: block; /* Ensure the image is a block element */
+    margin: 0 auto; /* Center the image horizontally */
+}
+
+/* Hover effects for images to scale and add shadow */
+.image-container img:hover {
+    transform: scale(1.05); /* Slightly increase size on hover */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Add shadow */
+}
+
+/* Algorithm Display Styles */
+
+/* Styling for the algorithm display */
+#algorithm {
+    font-size: 40px; 
+    background-color: #B4CDE4; 
+    border-radius: 10px;
+}
+
+/* Styling for the algorithm name with larger font size */
+#alg-name {
+    font-size: 40px; 
+}
+
+/* Style for algorithm's container */
+#alg-container {
+    background-color: #E1F5FE; 
+    padding: 20px; /* Add padding around the content */
+    border-radius: 10px; 
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    max-width: 800px; 
+    margin: 20px auto; /* Center the container with automatic margins */
+    color: #000000; 
+}
+
+/* Form Styles */
+
+/* Form styling to fit the width of its container */
+form {
+    width: 100%; /* Full width of the container */
+}
+
+/* Form label styling with margin and font weight */
+form label {
+    margin: 10px 0 5px; /* Margin above and below labels */
+    font-weight: bold; /* Bold font weight for labels */
+    width: 100%; /* Full width of the label */
+    text-align: left; 
+}
+
+/* Form input styling with padding, border, and width constraints */
+form input {
+    padding: 10px; /* Padding inside form inputs */
+    margin: 5px 0; /* Margin above and below inputs */
+    border: 1px solid #ccc; /* Light grey border */
+    border-radius: 4px; /* Rounded corners for inputs */
+    width: 100%;
+    max-width: 300px; 
+}
+
+/* Error message styling with red colour and bold text */
+.error-message {
+    color: red; 
+    font-weight: bold; /* Bold text for emphasis */
+    margin: 10px 0; /* Margin above and below error messages */
+    font-size: 2em; 
+}
+
+/* Link styling with font size, padding, and no text decoration */
+.link {
+    font-size: 2em; 
+    text-decoration: none; /* Remove underline from links */
+    margin: 10px 0; /* Margin above and below links */
+    padding: 10px; /* Padding inside links */
+    display: inline-block; /* Inline-block display for links */
+}
+
+/* Link hover effect to underline text */
+.link:hover {
+    text-decoration: underline; /* Underline links on hover */
+}
+
+/* Buttons */
+button {
+    font-size: 1.5em; 
+    padding: 15px 30px; /* Increased padding for a larger button */
+    border-radius: 8px; /* Rounded corners */
+    background-color: #ff4d4d; 
+    color: white; /* Text color */
+    border: none; /* Remove default border */
+    cursor: pointer; /* Change cursor to pointer on hover */
+    display: inline-block; /* Inline-block to respect width and height */
+    text-align: center; 
+    text-decoration: none; /* Remove underline from text */
+    transition: background-color 0.3s; /* Smooth transition for hover effect */
+}
+
+/* Hover effect for the button */
+button:hover {
+    background-color: #cc0000; /* Darker red background on hover */
+}
+
+/* Sorting Form Styles */
+
+/* Text styling inside the sorting form */
+#sorting-form p {
+    font-size: 1.2em; 
+    margin: 0 0 10px; /* Margin above and below paragraphs */
+    text-align: center; 
+    color: #ff0000;
+}
+
+/* Select element styling inside the sorting form */
+#sorting-select {
+    padding: 10px; /* Padding inside select element */
+    border: 1px solid #ccc; /* Light grey border */
+    font-size: 1em; 
+    width: 100%; 
+    margin-bottom: 20px; /* Margin below the select element */
+}
+
+/* Rating display */
+.rating-text {
+    font-size: 2em; 
+    background-color: #BFCC94; 
+    border-radius: 10px;
+}
+
+/* Links in rating */
+.rating-text a{
+    font-size: 1em; 
+    text-decoration: none; /* Remove underline from links */
+    margin: 10px 0; /* Margin above and below links */
+    padding: 10px; /* Padding inside links */
+    display: inline-block; /* Inline-block display for links */
+}
+
+/* Link hover effect to underline text */
+.rating-text a:hover {
+    text-decoration: underline; /* Underline links on hover */
+}

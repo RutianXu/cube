@@ -1,0 +1,36 @@
+<!doctype html>
+<html>
+  <head>
+    <title>My Site</title>
+    <link rel="stylesheet" href="/static/style.css">
+  </head>
+  <body>
+    <header>
+      <h1></h1>
+    </header>
+    <nav>{% include 'navigation_bar.html' %}</nav>
+    <main>
+      {% block content %}{% endblock %}
+      <button id="scrollToTop" title="Scroll to top">Scroll to Top</button>
+    </main>
+    <footer>© 2024 Tim Xu's website. All rights reserved.</footer>
+  </body>
+</html>
+<script>
+  // Get the button
+  var scrollToTopButton = document.getElementById('scrollToTop');
+
+  // When the user scrolls down 20px from the top of the document, show the button
+  window.onscroll = function() {
+      if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+          scrollToTopButton.style.display = 'block';
+      } else {
+          scrollToTopButton.style.display = 'none';
+      }
+  };
+
+  // When the user clicks on the button, scroll to the top of the document
+  scrollToTopButton.onclick = function() {
+      window.scrollTo({top: 0, behavior: 'smooth'});
+  };
+</script>

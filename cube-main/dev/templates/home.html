@@ -1,0 +1,50 @@
+{% extends "Layout.html" %}
+{% block content %} 
+
+<h1 class="heading">HOME</h1>
+
+<!-- Description of the website -->
+<p class="container">
+  Welcome to the Rubik’s Cube Algorithms website!
+  This platform is designed to help enthusiasts improve your cube-solving skills,
+  particularly at the intermediate level. It offers a comprehensive collection of
+  algorithms for solving various cube states. You can rate the algorithms
+  provided, creating a valuable resource for mastering the Rubik’s Cube.
+</p>
+
+<!-- Heading for the algorithms section -->
+<h1 class="heading">Algorithms</h1>
+
+<!-- Container for algorithm images -->
+<div class="image-container">
+  <!-- OLL algorithms -->
+  <div class="image-item">
+      <h2 class="heading">OLL</h2>
+      <a href="/algorithms/oll">
+          <img src="/static/oll.png" alt="OLL algorithms">
+      </a>
+  </div>
+  <!-- PLL algorithms -->
+  <div class="image-item">
+      <h2 class="heading">PLL</h2>
+      <a href="/algorithms/pll">
+          <img src="/static/pll.png" alt="PLL algorithms">
+      </a>
+  </div>
+</div>
+
+<!-- Additional information and links -->
+<div class="container">
+  <p>
+    In addition to a comprehensive collection of algorithms,
+    our site also features a timer to track
+    your solving speed and a notations page to help you
+    master the moves required for each algorithm. Whether
+    you're timing your solves or learning new techniques,
+    these tools are here to enhance your cube-solving experience.
+  </p>
+  <!-- Link to the timer adn notation page -->
+  <a href="/timer" class="link">Click here to the Timer</a>
+  <a href="/notation" class="link">Click here to the Notation page</a>
+</div>
+{% endblock %}

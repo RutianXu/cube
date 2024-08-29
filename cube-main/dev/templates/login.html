@@ -1,0 +1,40 @@
+{% extends "layout.html" %} 
+
+{% block content %}
+    <h2 class="heading">Login</h2> 
+    <div class="container">
+        <!-- Check if user logged in succesfully -->
+        {% if 'username' in session %}
+            <p class="error-message">You are logged in!</p>
+            <a href="/" class="link">Return to home</a>
+
+        {% else %}
+            <!-- Form for user login -->
+            <form method="post"> 
+                <!-- Input for username -->
+                <label for="username">Username:</label> 
+                <input type="text" name="username"><br> 
+                
+                <!-- Input for password -->
+                <label for="password">Password:</label> 
+                <input type="password" name="password"><br> 
+                
+                <!-- Submit login form -->
+                <button type="submit">Login</button> 
+            </form>
+             <!-- Error messages -->
+            {% if wrong_username %}
+                <p class="error-message">Account Does Not Exists!</p>
+            {% elif wrong_password %}
+                <p class="error-message">Wrong Password!</p>
+            {% elif exceed_limit %}
+                <p class="error-message">Username and password length must be less or equal to 10 characters!</p>
+            {% elif empty_input %}
+                <p class="error-message">Username or password can't be empty or have space!</p>
+            {% endif %}
+            <!-- Link to the registration page -->
+            <a href="/register" class="link">Register an account!</a> 
+        {% endif %}
+
+    </div>
+{% endblock %} 

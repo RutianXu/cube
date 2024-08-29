@@ -1,0 +1,28 @@
+<div>
+    <!-- Home page and logo links -->
+    <a href="/"> 
+        <img src="/static/logo.png" alt="logo" class="logo"> 
+    </a>
+    <a href="/" class="{% if request.path == '/' %}active{% endif %}">Home</a>
+    <!-- Algorithm page links -->
+    <div class="dropdown">
+        <button class="dropbtn {% if request.path.startswith('/algorithms/') %}active{% endif %}">Algorithms</button>
+        <div class="dropdown-content">
+            <a href="/algorithms/oll" class="{% if request.path == '/algorithms/oll' %}active{% endif %}">OLL</a>
+            <a href="/algorithms/pll" class="{% if request.path == '/algorithms/pll' %}active{% endif %}">PLL</a>  
+        </div>
+    </div>
+    <!-- Timer and notation page links-->
+    <a href="/timer" class="{% if request.path == '/timer' %}active{% endif %}">Timer</a>
+    <a href="/notation" class="{% if request.path == '/notation' %}active{% endif %}">Notation</a>
+
+    <!-- Check if user login -->
+    <div>
+        {% if 'username' in session %}
+            <a href="/logout" class="{% if request.path == '/logout' %}active{% endif %}">Logout</a>
+        {% else %}
+            <a href="/login" class="{% if request.path == '/login' %}active{% endif %}">Login</a>
+        {% endif %}
+    </div>
+</div>
+

@@ -1,0 +1,154 @@
+{% extends "layout.html" %}
+{% block content %}
+{% if 'username' in session %}
+    <h1 class="heading">Timer</h1>
+        <!-- Timer display -->
+        <div id="timer-container">
+            <div class="time-container">
+                <p id="timer">0.00 s</p>
+                <button id="controlButton" onclick="controlTimer()">Start</button>
+                <p>Hint: Press space bar to control the timer</p>
+            </div>
+            
+            <div class="time-container">
+                <h2 id="heading">Times</h2>
+                <button onclick="clearTimes()">Clear Times</button>
+                <ol id="time-list"></ol>
+            </div>
+        </div>
+        
+        <script>
+            let timer; // Timer interval
+            let totalMilliseconds = 0; // Total milliseconds elapsed
+            let isRunning = false; // FGag to track if timer is running
+            let reset = false; // Flag to track if time needs to reset
+            timeDisplay();
+            
+            // Function to control timer start and stop
+            function controlTimer() {
+                if (!isRunning) {
+                    startTimer(); // Start timer if not running
+                } else {
+                    stopTimer(); // Stop timer if running
+                    saveTime(totalMilliseconds / 1000); // Save time when stopping
+                }
+            }
+
+            // Function to start the timer
+            function startTimer() {
+                if (!timer) {
+                    timer = setInterval(setTime, 10); // Set interval to update time every 10 milliseconds
+                }
+                isRunning = true; // Set running flag to true
+                document.getElementById("controlButton").innerHTML = "Stop"; // Change button text to "Stop"
+            }
+
+            // Function to stop the timer
+            function stopTimer() {
+                clearInterval(timer); // Clear the timer interval
+                timer = null; // Reset timer variable
+                isRunning = false; // Set running flag to false
+                document.getElementById("controlButton").innerHTML = "Reset"; // Change button to Reset
+                document.getElementById("controlButton").onclick = resetTimer; // Change button to resetTimer
+                reset = true; // Set reset flag to true
+            }
+
+            // Function to reset the timer
+            function resetTimer() {
+                totalMilliseconds = 0; // Reset total milliseconds
+                document.getElementById("timer").innerHTML = "0.00 s"; // Reset timer display
+                document.getElementById("controlButton").innerHTML = "Start"; // Change button Start
+                document.getElementById("controlButton").onclick = controlTimer; // Change button to controlTimer
+            }
+
+            // Function to update the timer display
+            function setTime() {
+                totalMilliseconds += 10; // Add total milliseconds by 10 per interval
+                const totalSeconds = totalMilliseconds / 1000; // Calculate total seconds
+                document.getElementById("timer").innerHTML = totalSeconds.toFixed(2) + " s"; // Update timer display
+            }
+
+            // Function to save time 
+            function saveTime(time) {
+                const xhr = new XMLHttpRequest(); // Create new XMLHttpRequest object
+                xhr.open("POST", "/timer", true); // Set up post request
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); // Set request header
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4 && xhr.status == 200) { // Check if request is complete and successful
+                        timeDisplay();
+                        
+                    }
+                };
+                xhr.send("time=" + time); // Send post request 
+            }
+
+            // Function to clear all saved times
+            function clearTimes() {
+                const xhr = new XMLHttpRequest(); // Create new XMLHttpRequest object
+                xhr.open("POST", "/timer", true); // Set up POST request to /timer route
+                xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded"); // Set request header
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4 && xhr.status == 200) { // Check if request is complete and successful
+                        timeDisplay();
+                        }
+                    }
+                xhr.send("clear=true"); // Send POST request with clear flag
+            }
+
+            function timeDisplay() {
+                const xhr = new XMLHttpRequest(); // Create new XMLHttpRequest object
+                xhr.open("POST", "/timer", true); // Set up POST request to /timer route
+                xhr.setRequestHeader("time", "XMLHttpRequest"); 
+
+                xhr.onreadystatechange = function() {
+                    if (xhr.readyState === 4 && xhr.status === 200) {
+                        // Parse JSON response
+                        var times = JSON.parse(xhr.responseText);
+
+                        
+                        var listElement = document.getElementById('time-list');
+                        listElement.innerHTML = ''; // Clear existing content              
+                        var startNumber = times.length;
+                        times.forEach(function(item, index) {
+                            var listItem = document.createElement('li');
+                            listItem.textContent = item;
+
+                            // Manually set the list item's number
+                            listItem.setAttribute('value', startNumber - index);
+
+                            listElement.appendChild(listItem);
+                        });
+                    }
+                };
+
+                xhr.send(); // Send the request
+            }
+
+            // Add event listner to prevent spacebar scrolling
+            document.addEventListener('keydown', function(event) {
+                if (event.key === ' ') { 
+                    event.preventDefault(); // Prevent default spacebar action (scrolling)
+                }
+            });
+
+            // Add event listner to control timer with space bar
+            document.addEventListener('keyup', function(event) {
+                if (event.code === 'Space') {
+                    if (reset) {
+                        resetTimer(); // Call resetTimer function
+                        reset = false; // Set reset flag to false
+                    } else {
+                        controlTimer(); // Call controlTimer function  
+                    }
+                }
+            });
+           
+        </script>
+{% else %}
+    <div class="container">
+        <!-- Error message -->
+        <p class="error-message">Please login or create an account to use the timer.</p>
+        <a href="/login" class="link">Login</a>
+    </div>
+{% endif %}
+{% endblock %}
