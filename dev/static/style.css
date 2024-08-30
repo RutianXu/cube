@@ -46,6 +46,28 @@ body {
     margin: 20px 0; /* Margin above and below the heading */
 }
 
+/* Scroll to Top Button Styles */
+#scrollToTop {
+    position: fixed; /* Fix the button to the viewport */
+    bottom: 20px; /* Distance from the bottom */
+    right: 20px; /* Distance from the right */
+    font-size: 1em; /* Size of the button text */
+    background-color: #ff4d4d; /* Background color of the button */
+    color: white; /* Text color */
+    border: none; /* Remove default border */
+    border-radius: 4px; /* Rounded corners */
+    padding: 10px 15px; /* Padding inside the button */
+    cursor: pointer; /* Change cursor to pointer on hover */
+    display: none; /* Hide the button initially */
+    z-index: 1000; /* Ensure the button stays above other content */
+}
+
+/* Hover effect for the button */
+#scrollToTop:hover {
+    background-color: #cc0000; /* Darker red on hover */
+}
+
+
 /* Timer styles */
 
 /* Timer display styling with large font size */
@@ -55,26 +77,6 @@ body {
     margin: 20px 0; /* Margin above and below the timer */
 }
 
-#timer-container {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
-    box-sizing: border-box; /* Ensure padding and margin are included in the width */
-}
-
-/* Style for the individual time containers */
-.time-container {
-    font-size: 1.2em;
-    display: flex; /* Use flexbox for internal layout */
-    flex-direction: column; /* Stack items vertically */
-    gap: 20px; /* Space between internal items */
-    text-align: center; 
-    background-color: white; 
-    padding: 20px; 
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
-    flex: 1; /* Allow the container to grow and fill available space */
-    margin: 0 10px; /* Add horizontal margin to ensure spacing */
-}
 
 /* Footer Styles */
 
@@ -103,38 +105,42 @@ footer a:hover {
 /* Navbar Styles */
 
 /* Navbar container with background colour and font settings */
-.navbar {
+nav {
     overflow: hidden; /* Prevent overflow of navbar content */
-    background-color: #344966; 
-    font-family: Arial; 
+    background-color: #344966;
+    font-family: Arial;
+    top: 0; /* Aligns the navbar to the top of the page */
+    width: 100%; /* Ensures the navbar spans the full width of the page */
+    z-index: 1000; /* Ensures the navbar stays above other content */
 }
+
 
 /* Logo styling with background colour, dimensions, and alignment */
 .logo {
-    background-color: white; 
-    border-radius: 3px; 
-    height: 40px; 
-    width: auto; 
-    vertical-align: middle; 
+    background-color: white;
+    border-radius: 3px;
+    height: 40px;
+    width: auto;
+    vertical-align: middle;
     display: inline-block; /* Inline-block display for proper alignment */
     margin-right: 20px; /* Margin to the right of the logo */
 }
 
 /* Navbar links with font size, colour, padding, and alignment */
-.navbar a {
+nav a {
     float: left; /* Float links to the left */
-    font-size: 40px; 
-    color: white; 
-    text-align: center; 
+    font-size: 40px;
+    color: white;
+    text-align: center;
     padding: 14px 20px;
-    border-radius: 10px; 
-    text-decoration: none; 
+    border-radius: 10px;
+    text-decoration: none;
     line-height: 40px; /* Line height to match font size */
 }
 
 /* Active link styling */
-.navbar a.active, .navbar .dropbtn.active {
-    background-color: #ff4d4d;  
+nav a.active, nav .dropbtn.active {
+    background-color: #ff4d4d;
 }
 
 /* Dropdown container for additional navigation options */
@@ -145,10 +151,10 @@ footer a:hover {
 
 /* Dropdown button styling with font size, colour, and padding */
 .dropdown .dropbtn {
-    font-size: 40px; 
+    font-size: 40px;
     border: none; /* Remove border from dropdown button */
     outline: none; /* Remove outline from dropdown button */
-    color: white; 
+    color: white;
     padding: 14px 20px; /* Padding inside the dropdown button */
     background-color: inherit; /* Inherit background colour from navbar */
     margin: 0; /* Remove margin */
@@ -160,25 +166,25 @@ footer a:hover {
 .dropdown-content {
     display: none; /* Hide dropdown content initially */
     position: absolute; /* Absolute positioning for dropdown content */
-    background-color: #f9f9f9; 
-    min-width: 160px; 
+    background-color: #f9f9f9;
+    min-width: 160px;
     box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2); /* Shadow effect for dropdown */
-    z-index: 1; 
+    z-index: 1;
 }
 
 /* Links inside the dropdown with colour, padding, and alignment */
 .dropdown-content a {
     float: none; /* No floating for dropdown links */
-    color: black; 
+    color: black;
     padding: 12px 16px; /* Padding inside dropdown links */
     text-decoration: none;
     display: block; /* Block display for dropdown links */
-    text-align: left; 
+    text-align: left;
 }
 
 /* Hover effect for dropdown links */
 .dropdown-content a:hover {
-    background-color: #ddd; 
+    background-color: #ddd;
 }
 
 /* Show the dropdown menu when hovering over the dropdown container */
@@ -187,9 +193,10 @@ footer a:hover {
 }
 
 /* Navbar and dropdown button hover effects */
-.navbar a:hover, .dropdown:hover .dropbtn {
-    background-color: red; 
+nav a:hover, .dropdown:hover .dropbtn {
+    background-color: red;
 }
+
 
 /* Image Container Styles */
 

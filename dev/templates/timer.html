@@ -3,18 +3,16 @@
 {% if 'username' in session %}
     <h1 class="heading">Timer</h1>
         <!-- Timer display -->
-        <div id="timer-container">
-            <div class="time-container">
-                <p id="timer">0.00 s</p>
-                <button id="controlButton" onclick="controlTimer()">Start</button>
-                <p>Hint: Press space bar to control the timer</p>
-            </div>
-            
-            <div class="time-container">
-                <h2 id="heading">Times</h2>
-                <button onclick="clearTimes()">Clear Times</button>
-                <ol id="time-list"></ol>
-            </div>
+        <div class="container">
+            <p id="timer">0.00 s</p>
+            <button id="controlButton" onclick="controlTimer()">Start</button>
+            <p>Hint: Press space bar to control the timer</p>
+        </div>
+        
+        <div class="container">
+            <h2 id="heading">Times</h2>
+            <button onclick="clearTimes()">Clear Times</button>
+            <ol id="time-list"></ol>
         </div>
         
         <script>
