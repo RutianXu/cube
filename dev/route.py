@@ -3,6 +3,7 @@ import sqlite3
 from base64 import b64encode
 from secrets import token_hex
 
+
 app = Flask(__name__)
 app.config['SECRET_KEY'] = token_hex(32)  # Generate a random secret key for securing sessions
 
@@ -198,6 +199,7 @@ def algorithm(algorithm_set):
         'GROUP BY algorithm_id',
         fetch_all=True
     )
+
     # Store the query results in a dictionary
     ratings = {item[0]: item[1] for item in ratings}
 

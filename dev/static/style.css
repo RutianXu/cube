@@ -21,13 +21,13 @@ body {
 .container {
     font-size: 1.2em;
     display: grid; /* Enable grid layout */
-    gap: 20px; /* Space between grid items */
+    gap: 10px; /* Space between grid items */
     text-align: center; 
     background-color: white; 
-    padding: 20px; 
+    padding: 10px; 
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
     max-width: 600px; 
-    margin: 20px auto; /* Centre the container with automatic margins */
+    margin: 10px auto; /* Centre the container with automatic margins */
     flex: 1; /* Allow the container to grow and fill available space */
 }
 
@@ -73,7 +73,7 @@ body {
 /* Timer display styling with large font size */
 #timer {
     text-align: center; 
-    font-size: 5em; 
+    font-size: 2em; 
     margin: 20px 0; /* Margin above and below the timer */
 }
 
@@ -243,24 +243,24 @@ nav a:hover, .dropdown:hover .dropbtn {
 
 /* Styling for the algorithm display */
 #algorithm {
-    font-size: 40px; 
+    font-size: 30px; 
     background-color: #B4CDE4; 
     border-radius: 10px;
 }
 
 /* Styling for the algorithm name with larger font size */
 #alg-name {
-    font-size: 40px; 
+    font-size: 30px; 
 }
 
 /* Style for algorithm's container */
 #alg-container {
     background-color: #E1F5FE; 
-    padding: 20px; /* Add padding around the content */
+    padding: 10px; /* Add padding around the content */
     border-radius: 10px; 
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
     max-width: 800px; 
-    margin: 20px auto; /* Center the container with automatic margins */
+    margin: 10px auto; /* Center the container with automatic margins */
     color: #000000; 
 }
 
@@ -294,12 +294,13 @@ form input {
     color: red; 
     font-weight: bold; /* Bold text for emphasis */
     margin: 10px 0; /* Margin above and below error messages */
-    font-size: 2em; 
+    font-size: 1em; 
 }
 
 /* Link styling with font size, padding, and no text decoration */
 .link {
-    font-size: 2em; 
+    color: green;
+    font-size: 1em; 
     text-decoration: none; /* Remove underline from links */
     margin: 10px 0; /* Margin above and below links */
     padding: 10px; /* Padding inside links */
@@ -313,7 +314,7 @@ form input {
 
 /* Buttons */
 button {
-    font-size: 1.5em; 
+    font-size: 1em; 
     padding: 15px 30px; /* Increased padding for a larger button */
     border-radius: 8px; /* Rounded corners */
     background-color: #ff4d4d; 
@@ -335,7 +336,7 @@ button:hover {
 
 /* Text styling inside the sorting form */
 #sorting-form p {
-    font-size: 1.2em; 
+    font-size: 1em; 
     margin: 0 0 10px; /* Margin above and below paragraphs */
     text-align: center; 
     color: #ff0000;
@@ -352,13 +353,14 @@ button:hover {
 
 /* Rating display */
 .rating-text {
-    font-size: 2em; 
+    font-size: 1em; 
     background-color: #BFCC94; 
     border-radius: 10px;
 }
 
 /* Links in rating */
 .rating-text a{
+    color:red;
     font-size: 1em; 
     text-decoration: none; /* Remove underline from links */
     margin: 10px 0; /* Margin above and below links */
