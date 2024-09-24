@@ -300,11 +300,13 @@ form input {
 /* Link styling with font size, padding, and no text decoration */
 .link {
     color: green;
-    font-size: 1em; 
+    font-size: 1em;
     text-decoration: none; /* Remove underline from links */
     margin: 10px 0; /* Margin above and below links */
     padding: 10px; /* Padding inside links */
     display: inline-block; /* Inline-block display for links */
+    background-color: #0afaaa; /* Add background color for padding */
+    border-radius: 5px; /* Optional: Add rounded corners */
 }
 
 /* Link hover effect to underline text */

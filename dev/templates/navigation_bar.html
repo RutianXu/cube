@@ -1,4 +1,4 @@
-<div>
+<div id="nav-bar">
     <!-- Home page and logo links -->
     <a href="/"> 
         <img src="/static/logo.png" alt="logo" class="logo"> 
@@ -12,12 +12,10 @@
             <a href="/algorithms/pll" class="{% if request.path == '/algorithms/pll' %}active{% endif %}">PLL</a>  
         </div>
     </div>
-    <!-- Timer and notation page links-->
+    
     <a href="/timer" class="{% if request.path == '/timer' %}active{% endif %}">Timer</a>
     <a href="/notation" class="{% if request.path == '/notation' %}active{% endif %}">Notation</a>
-
-    <!-- Check if user login -->
-    <div>
+    <div id="login-system">
         {% if 'username' in session %}
             <a href="/logout" class="{% if request.path == '/logout' %}active{% endif %}">Logout</a>
         {% else %}

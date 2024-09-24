@@ -5,7 +5,7 @@ from secrets import token_hex
 
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = token_hex(32)  # Generate a random secret key for securing sessions
+app.config['SECRET_KEY'] = token_hex(32)
 
 
 # Function to execute queries
@@ -23,14 +23,13 @@ def execute_query(query, parameters=(), fetch_one=False, fetch_all=False, commit
     Returns:
         result: Query result or None
     """
-    # Connect to the database
     conn = sqlite3.connect('cube.db')
     cur = conn.cursor()
-    # Execute query with parameters
     cur.execute(query, parameters)
-    # Process results from the query
+    # Fetch or commit results from the query
     if commit:
         conn.commit()
+        # Set result to None because no data is fecthed
         result = None
     elif fetch_one:
         result = cur.fetchone()
@@ -50,10 +49,10 @@ def check_account():
         password (str): The password from the form
         errors (dict): A dictionary of the possible errors of inputs
     """
-    # Default values for variables
     errors = {
         'empty_input': False,
         'exceed_limit': False,
+        'short_password': False,
     }
     check_username = {
         'query_result': None,
@@ -63,17 +62,19 @@ def check_account():
     password = None
     if request.method == 'POST':
         if 'username' in request.form and 'password' in request.form:
-            # Get username and password from form
             username = request.form.get('username')
             password = request.form.get('password')
-            # Check if inputs are empty or contain space
+
+            # Error checking for username and password
             if username == '' or password == '' or ' ' in username or ' ' in password:
                 errors['empty_input'] = True
-            # Check if inputs are longer than 10 characters
+            elif len(password) < 6:
+                errors['short_password'] = True
             elif len(username) > 10 or len(password) > 10:
                 errors['exceed_limit'] = True
-            # Get username from the database if inputs are valid
-            if not errors['empty_input'] and not errors['exceed_limit']:
+
+            # Get username from the database if the inputs are valid
+            if not errors['empty_input'] and not errors['exceed_limit'] and not errors['short_password']:
                 check_username['query_result'] = execute_query(
                     'SELECT * FROM users WHERE username=?',
                     (username,), fetch_one=True
@@ -115,39 +116,35 @@ def algorithm(algorithm_set):
             - in_range (bool): Whether the rating is within the allowed range (0-5).
             - ratings (dict): Updated average ratings for algorithms.
     """
-    sorting_way = 'id'  # Default sorting method for algoirthms
-    valid_rating = True  # Flag for checking if the rating is valid
-    is_space = False  # Flag for checking if the inputs has space or empty
-    in_range = True  # Flag for chekcing if the inputs are within the range(0-5)
+    sorting_way = 'id'
+    valid_rating = True
+    is_space = False
+    in_range = True
     if request.method == 'POST':
-        # Form submission for how algoirthms are sorted
         if 'sorting-select' in request.form:
             sorting_way = request.form.get('sorting-select')
-
-        # Form submission for rating
         if 'rating' in request.form:
             algorithm_id = request.form.get('algorithm_id')
             user_id = session.get('user_id')
             rating = request.form.get('rating')
 
-            # Check if rating is not empty and does not contain spaces
+            # Error checking for rating input
             if rating == '' or ' ' in rating:
                 is_space = True
             try:
-                # Convert rating to an integer
                 rating = int(rating)
-                # Check if rating is within range
-                if 0 > int(rating) or int(rating) > 5:
+                if 0 > rating or rating > 5:
                     in_range = False
             except ValueError:
                 in_range = False
+
             # Check if rating is valid
             if not in_range or is_space:
                 valid_rating = False
             else:
                 # Check if a rating already exists in the database
                 check_rating = execute_query(
-                    'SELECT * FROM ratings WHERE algorithm_id = ? AND user_id = ?',
+                    'SELECT rating FROM ratings WHERE algorithm_id = ? AND user_id = ?',
                     (algorithm_id, user_id,), fetch_one=True
                 )
                 if check_rating is None:
@@ -163,47 +160,42 @@ def algorithm(algorithm_set):
                         (rating, user_id, algorithm_id,), commit=True
                     )
 
-    # Fetch the algorithms from the database
+    # Sorting and fetch ssssalgorithms
     if sorting_way == 'name':
-        # Fetch algorithms from the database and order by algorithm name
         algorithms = execute_query(
-            'SELECT * FROM algorithms WHERE algorithm_set=? ORDER BY name',
+            'SELECT id, name, notations, image FROM algorithms WHERE algorithm_set=? ORDER BY name',
             (algorithm_set,), fetch_all=True
         )
     else:
-        # Fetch algorithms from the database and order by algorithm id
         algorithms = execute_query(
-            'SELECT * FROM algorithms WHERE algorithm_set=? ORDER BY id',
+            'SELECT id, name, notations, image FROM algorithms WHERE algorithm_set=? ORDER BY id',
             (algorithm_set,), fetch_all=True
         )
 
-    # Return an error page to user if the algorithms set does not exists in database
+    # Render a 404 page if the algorithms set does not exists in the database
     if algorithms is None:
         return render_template('404.html')
 
-    # Process algorithms' images to display in the website
-    algorithms = [list(item) for item in algorithms]  # store all algorithms in a list
-    images = []
+    # Change image values from BLOB to a base64 string
+    algorithms = [list(item) for item in algorithms]
+    images = []  # Stores images separately to the algorithms
     for algorithm in algorithms:
         image_blob = algorithm[-1]
-        # Convert image value from blob to a base64 string
         if image_blob:
             encoded_image = b64encode(image_blob).decode('utf-8')
             img = [algorithm[1], encoded_image]
             images.append(img)
 
-    # Fetch ratings from the database
+    # Fetch and calculates average rating from the database
     ratings = execute_query(
         'SELECT algorithm_id, ROUND(AVG(rating), 1) AS average_rating '
         'FROM ratings '
         'GROUP BY algorithm_id',
         fetch_all=True
     )
-
-    # Store the query results in a dictionary
     ratings = {item[0]: item[1] for item in ratings}
 
-    # Check if the request is an AJAX request
+    # Check if the request is an AJAX request for updating new average rating
     if request.headers.get('rating') == 'XMLHttpRequest':
         response = {
             'valid_rating': valid_rating,
@@ -236,16 +228,12 @@ def register():
         - empty_input (bool): Flag indicating if inputs from forms are emtpy or have space.
         - exceed_limit (bool): Flag indicatin if inputs are longer than 10 characters.
     """
-    username_exist = False  # Flag for checking if username exist in the database
-    registered = False  # Flag for checking if user registered successfully
-
-    # Check error for inputs from register form submission
+    username_exist = False
+    registered = False
     check_username, username, password, errors = check_account()
-    # Check if inputs are valid
+
     if check_username['submit_form']:
-        # Check if username exists
-        if check_username['query_result'] is None:
-            # Insert the new user account into the database
+        if check_username['query_result'] is None:  # Check if username exists
             execute_query(
                 'INSERT INTO users (username, password) VALUES (?, ?)',
                 (username, password), commit=True
@@ -259,6 +247,7 @@ def register():
         registered=registered,
         exceed_limit=errors['exceed_limit'],
         empty_input=errors['empty_input'],
+        short_password=errors['short_password']
     )
 
 
@@ -275,27 +264,22 @@ def login():
         - empty_input (bool): Flag indicating if inputs from forms are emtpy or have space.
         - exceed_limit (bool): Flag indicatin if inputs are longer than 10 characters.
     """
-    wrong_username = False  # Flag for checking if user's username is correct
-    wrong_password = False  # Flag for checking if user's password is correct
-
-    # Check errors for input from login form
+    wrong_username = False
+    wrong_password = False
     check_username, username, password, errors = check_account()
-    # Check if inputs are valid
+
     if check_username['submit_form']:
-        # Check if username exists in database
-        if check_username['query_result'] is None:
-            # Set wrong username flag to True
+        if check_username['query_result'] is None:  # Check if username exists
             wrong_username = True
         else:
             # Check if password is correct
             check_password = execute_query(
-                'SELECT * FROM users WHERE username = ? AND password = ?',
+                'SELECT id FROM users WHERE username = ? AND password = ?',
                 (username, password,), fetch_one=True
             )
             if check_password is None:
                 wrong_password = True
             else:
-                # Set up session variables
                 session['username'] = username
                 session['user_id'] = check_password[0]
 
@@ -304,7 +288,8 @@ def login():
         wrong_username=wrong_username,
         wrong_password=wrong_password,
         exceed_limit=errors['exceed_limit'],
-        empty_input=errors['empty_input']
+        empty_input=errors['empty_input'],
+        short_password=errors['short_password']
     )
 
 
@@ -318,10 +303,9 @@ def logout():
         Render the logout template:
         - delete_account (bool): Flag indicating if the account has been deleted.
     """
-    delete_account = False # Flag for checking if account is delected
+    delete_account = False
     if request.method == 'POST':
         if 'delete' in request.form:
-            # Form submission for delelte account and delete account in the database
             user_id = session.get('user_id')
             execute_query(
                 'DELETE FROM users WHERE id = ?',
@@ -337,7 +321,6 @@ def logout():
             )
             delete_account = True
         if 'logout' in request.form or 'delete' in request.form:
-            # Remove session variables
             session.pop('username')
             session.pop('user_id')
 
@@ -360,31 +343,28 @@ def timer():
         JSON response:
             - times (list): List of new saved times to update in the website.
     """
-    # Check if user login
     if 'user_id' not in session:
-        times = None  # Set times to None so the saved times in the database will not display
+        times = None  # Set times to None so the times in the database will not display
     else:
         user_id = session.get('user_id')
         if request.method == 'POST':
             if 'time' in request.form:
-                # Save time in database
                 time_value = request.form.get('time')
                 execute_query(
                     'INSERT INTO timer (time, user_id) VALUES (?, ?)',
                     (time_value, user_id), commit=True
                 )
             elif 'clear' in request.form:
-                # Clear times in database
                 execute_query(
                     'DELETE FROM timer WHERE user_id=?',
                     (user_id,), commit=True
                 )
-        # Fetch saved times from the database
+
         times = execute_query(
             'SELECT time FROM timer WHERE user_id=? ORDER BY id DESC',
             (user_id,), fetch_all=True
         )
-    # Check if the request is an AJAX request
+    # Check if the request is an AJAX request so times are updated on the website
     if request.headers.get('time') == 'XMLHttpRequest':
         return jsonify(times)
 

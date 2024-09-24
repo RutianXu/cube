@@ -1,108 +1,97 @@
 {% extends "Layout.html" %}
 {% block content %}
-<div>
-    <!-- Page heading based on the algorithm set -->
-    <h1 class="heading">{{ algorithm_set | upper }}</h1>
+<h1 class="heading">{{ algorithm_set | upper }}</h1>
+<div class="container description">
+    <!-- Description based on the selected algorithm set -->
+    {% if algorithm_set == 'pll' %}
+        <p>
+            PLL (Permutation of the Last Layer) algorithms are used in the final stage of solving 
+            a Rubik's Cube to correctly position the pieces of the last layer after their orientation
+            has been set. These algorithms ensure that each piece is moved into its correct spot
+            without affecting the already solved portions of the cube, thereby completing the
+            puzzle. Mastering PLL algorithms is essential for efficiently finishing the cube
+            and achieving a fully solved state.
+        </p>
+    {% elif algorithm_set == 'oll' %}
+        <p>
+            OLL (Orientation of the Last Layer) algorithms are used in the intermediate
+            stage of solving a Rubik's Cube to orient all pieces on the last layer so
+            that the top face of the cube is uniform in colour(usually yellow). This step is crucial
+            as it sets up the final phase, where the pieces are permuted into their
+            correct positions. By mastering OLL algorithms, solvers can ensure that
+            the last layer is correctly oriented, making the final stage of the solve
+            more straightforward and efficient.
+        </p>
+    {% endif %}
     
-    <div class="container description">
-        <!-- Description based on the selected algorithm set -->
-        {% if algorithm_set == 'pll' %}
-            <p>
-                PLL (Permutation of the Last Layer) algorithms are used in the final stage of solving 
-                a Rubik's Cube to correctly position the pieces of the last layer after their orientation
-                has been set. These algorithms ensure that each piece is moved into its correct spot
-                without affecting the already solved portions of the cube, thereby completing the
-                puzzle. Mastering PLL algorithms is essential for efficiently finishing the cube
-                and achieving a fully solved state.
-            </p>
-        {% elif algorithm_set == 'oll' %}
-            <p>
-                OLL (Orientation of the Last Layer) algorithms are used in the intermediate
-                stage of solving a Rubik's Cube to orient all pieces on the last layer so
-                that the top face of the cube is uniform in colour(usually yellow). This step is crucial
-                as it sets up the final phase, where the pieces are permuted into their
-                correct positions. By mastering OLL algorithms, solvers can ensure that
-                the last layer is correctly oriented, making the final stage of the solve
-                more straightforward and efficient.
-            </p>
-        {% endif %}
-        
-        <!-- Guides for using algorithms and link to the Notation page -->
-        <p class="error-message">Tutorial on how to use the algorithms are on the Notation page</p>
-        <a href="/notation" class="link">Click here to the Notation page</a>
-    </div>
-    
-    <div class="container">
-        <!-- Form to submit sorting options -->
-        <form method="post" id="sorting-form">
-            <!-- Display current sorting method -->
-            {% if sorting_way == 'name' %}
-                <p>Sort algorithms by NAME</p>
-            {% else %}
-                <p>Sort algorithms by DEFAULT</p>
-            {% endif %}
-
-            <!-- Sorting options dropdown -->
-            <select id="sorting-select" name="sorting-select">
-                <option value="">Select an option to sort algorithms</option>
-                <option value="id">Default</option>
-                <option value="name">Name</option>
-            </select>
-            <button type="submit">Submit</button>
-        </form>
-    </div>
-
-    <!-- Loop through images to display each algorithm -->
-    {% for image in images %}
-        <div class="container">
-            <!-- Display the algorithm name -->
-            <p id="alg-name">Name: {{ image[0] }}</p>
-
-            <!-- Display the algorithm image -->
-            <img src="data:image/jpeg;base64,{{ image[1] }}" alt="Algorithm Image">
-
-            <!-- Loop through algorithms to match and display details -->
-            {% for algs in algorithms %}
-                {% if algs[1] == image[0] %}
-                    <div id="alg-container">
-
-                        <!-- Display the algorithm description -->
-                        <p id="algorithm">{{ algs[3] }}</p>
-
-                        <!-- Rating form (visible if user is logged in) -->
-                        {% if 'username' in session %}
-                            <div class="rating">
-                                <form id="rating-form-{{ algs[0] }}" onsubmit="submitRating(event, '{{ algs[0] }}')">
-                                    <div class="form-group">
-                                        <label for="rating">Rate this algorithm (from 0 to 5):</label>
-                                        <input name="rating">
-                                    </div>
-                                    <button type="submit">Submit Rating</button>
-                                </form>
-                            </div>
-                            <!-- Error messages -->
-                            <p class="error-message" id="rating-error-{{ algs[0] }}"></p>
-                        {% else %}
-                            <div class="rating-text">
-                                <!-- Prompt user to log in to rate algorithms -->
-                                <a href="/login">Login to rate algorithms</a>
-                            </div>
-                        {% endif %}
-
-                        <!-- Display the average rating for the algorithm -->
-                        {% if algs[0] in ratings %}
-                            <p class="rating-text" id="rating-display-{{ algs[0] }}">Average Rating: {{ ratings[algs[0]] }}</p>
-                        {% else %}
-                            <p class="rating-text" id="rating-display-{{ algs[0] }}">No Ratings Yet</p>
-                        {% endif %}
-                    </div>
-                {% endif %}      
-            {% endfor %}
-        </div>
-    {% endfor %}
+    <!-- Guides for using algorithms and link to the Notation page -->
+    <p class="error-message">Tutorial on how to use the algorithms are on the Notation page</p>
+    <a href="/notation" class="link">Click here to the Notation page</a>
 </div>
 
+<div class="container">
+    <form method="post" id="sorting-form">
+        <!-- Display current sorting method -->
+        {% if sorting_way == 'name' %}
+            <p>Sort algorithms by NAME</p>
+        {% else %}
+            <p>Sort algorithms by DEFAULT</p>
+        {% endif %}
+
+        <!-- Sorting options dropdown -->
+        <select id="sorting-select" name="sorting-select">
+            <option value="">Select an option to sort algorithms</option>
+            <option value="id">Default</option>
+            <option value="name">Name</option>
+        </select>
+        <button type="submit">Submit</button>
+    </form>
+</div>
+
+<!-- Loop through images to display each algorithm -->
+{% for image in images %}
+    <div class="container">
+        <p id="alg-name">Name: {{ image[0] }}</p>
+        <img src="data:image/jpeg;base64,{{ image[1] }}" alt="Algorithm Image">
+        <!-- Loop through algorithms to match to images-->
+        {% for algs in algorithms %}
+            {% if algs[1] == image[0] %}
+                <div id="alg-container">
+                    <p id="algorithm">{{ algs[2] }}</p>
+
+                    <!-- Rating form (visible if user is logged in) -->
+                    {% if 'username' in session %}
+                        <div class="rating">
+                            <form id="rating-form-{{ algs[0] }}" onsubmit="submitRating(event, '{{ algs[0] }}')">
+                                <div class="form-group">
+                                    <label for="rating">Rate this algorithm (from 0 to 5):</label>
+                                    <input name="rating">
+                                </div>
+                                <button type="submit">Submit Rating</button>
+                            </form>
+                        </div>
+                        <p class="error-message" id="rating-error-{{ algs[0] }}"></p>
+                    {% else %}
+                        <div class="rating-text">
+                            <a href="/login">Click here to login to rate algorithms</a>
+                        </div>
+                    {% endif %}
+
+                    <!-- Display the average rating for the algorithm -->
+                    {% if algs[0] in ratings %}
+                        <p class="rating-text" id="rating-display-{{ algs[0] }}">Average Rating: {{ ratings[algs[0]] }}</p>
+                    {% else %}
+                        <p class="rating-text" id="rating-display-{{ algs[0] }}">No Ratings Yet</p>
+                    {% endif %}
+                </div>
+            {% endif %}      
+        {% endfor %}
+    </div>
+{% endfor %}
+
+
 <script>
+    // Funciton to submit rating form
     function submitRating(event, algorithmId) {
         event.preventDefault(); // Prevent default form submission
 
@@ -130,7 +119,7 @@
                     var ratings = response.ratings;
                     if (validRating) {
                         document.getElementById("rating-display-" + algorithmId).textContent = "Average Rating:" + ratings[algorithmId];
-                        document.getElementById('rating-error-' + algorithmId).textContent = "Rating Submitted!";
+                        document.getElementById('rating-error-' + algorithmId).textContent = "Rating Submitted!  Reload page to change rating for this algorithm.";
                         form.remove();
                     } 
                     else {
@@ -138,7 +127,7 @@
                             document.getElementById('rating-error-' + algorithmId).textContent = "Input must not contain space or be empty";
                         }
                         else if (!inRange) {
-                            document.getElementById('rating-error-' + algorithmId).textContent = "Input must be an integer from 0 to 5";
+                            document.getElementById('rating-error-' + algorithmId).textContent = "Input must be an integer from 0 to 5.";
                         }
                     }
                 }
