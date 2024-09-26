@@ -14,6 +14,13 @@
         <button onclick="clearTimes()">Clear Times</button>
         <ol id="time-list"></ol>
     </div>
+{% else %}
+    <div class="container">
+        <!-- Error message -->
+        <p class="error-message">Please login or create an account to use the timer</p>
+        <a href="/login" class="link">Click here to login</a>
+    </div>
+{% endif %}
         
 <script>
     let timer; 
@@ -142,11 +149,4 @@
     });
     
 </script>
-{% else %}
-    <div class="container">
-        <!-- Error message -->
-        <p class="error-message">Please login or create an account to use the timer</p>
-        <a href="/login" class="link">Click here to login</a>
-    </div>
-{% endif %}
 {% endblock %}

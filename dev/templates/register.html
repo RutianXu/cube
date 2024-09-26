@@ -6,13 +6,18 @@
         {% if registered %}
             <p class="error-message">Account registered!</p>
         {% else %}
+            <!-- Register form-->
             <form method="post">
                 <label for="username">Username:</label>
-                <input type="text" id="username" name="username"><br>\
+                <input type="text" id="username" name="username"><br>
 
                 <label for="password">Password:</label>
-                <input type="password" id="password" name="password"><br>
-                
+                <input type="text" id="password" name="password"><br>
+                <p>
+                    Username and password must not contain space.<br>
+                    Username and password must be less than or equal to 10 characters.<br>
+                    Password must be more than or equal to 6 characters.
+                </p>
                 <button type="submit">Register</button>       
         </form>
         {% endif %}

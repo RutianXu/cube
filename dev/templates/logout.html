@@ -3,11 +3,13 @@
 
 <h2 class="heading">Logout</h2>
 <div class="container">
+    <!-- Check if user login-->
     {% if 'username' in session %}
         {% if delete_account %}
             <p class="heading">Account deleted!</p>
             <a href="/" class="link">Return to home</a>
         {% else %}
+            <!-- Logout form-->
             <form method="post">
                 <input type="hidden" name="logout" value="logout">
                 <button type="submit">Logout</button>
@@ -24,6 +26,7 @@
     {% endif %}
 </div>
 <script>
+    // Function for confirming delete account
     function confirmSubmission(event) {
         const userConfirmed = confirm("Are you sure you want to delete account?");
         if (!userConfirmed) {
